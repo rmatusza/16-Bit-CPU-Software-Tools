@@ -10,7 +10,7 @@ High-level language → VM code → Assembly → Binary
 - The Assembler converts assembly into binary machine code executable on the 16-bit Hack computer
 
 ## Example 
-- Below is visual example of what each stage of the code looks like (excluding the high-level code since that part is in progress)
+- Below is visual example of what each stage of the code looks like
 - This is a program that performs the calculation "5 x 3" 
 
 ![alt text](./images/16-bit-computer-software-hierarchy.png)
