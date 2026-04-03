@@ -5,13 +5,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+// TODO: update the format method to be similar to the one in the assembler with syntax checks and an "instruction-to-line number" map for better error messages
 public class Parser {
     private List<String> lines;
     private int index = 0;
     private int lineNum = 1;
     private List<String> currCom = new ArrayList<>();
-    private List<String> arithCom = List.of("add", "sub", "neg", "eq", "gt", "lt", "and", "or", "not");
-    private Map<String, CType> cMap = Map.of(
+    private final List<String> arithCom = List.of("add", "sub", "neg", "eq", "gt", "lt", "and", "or", "not");
+    private final Map<String, CType> cMap = Map.of(
             "push", CType.C_PUSH,
             "pop", CType.C_POP,
             "math", CType.C_ARITHMETIC
