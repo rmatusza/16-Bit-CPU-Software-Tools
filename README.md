@@ -41,7 +41,7 @@ The Assembler translates assembly language into binary machine code.
 ---
 
 ## ⚠️ Project Status
-This project is currently a work in progress. Refer to the below feature list for overall progress.
+This project is currently a work in progress. Refer to the below feature list for overall status.
 
 # Feature List
 
