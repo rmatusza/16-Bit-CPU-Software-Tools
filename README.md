@@ -49,8 +49,8 @@ This project is currently a work in progress. Refer to the below feature list fo
   - Fully implemented and functional
 
 - 🚧 **VM Translator**
-  - Supports arithmetic and memory access commands
-  - Program flow and function calling commands in progress
+  - IMPLEMENTED: Arithmetic and memory access commands
+  - IN PROGRESS: Program flow and function calling commands
 
 - ❗ **Compiler**
   - Not started
