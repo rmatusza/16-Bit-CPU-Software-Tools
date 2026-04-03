@@ -1,5 +1,5 @@
 # Overview
-This repository contains software tools that make up the translation pipeline from high-level code down to machine code that is executable on a 16-bit computer
+This repository contains software tools that make up the translation pipeline from high-level code down to machine code, which is executable on a 16-bit computer
 
 The process follows these stages:
 
