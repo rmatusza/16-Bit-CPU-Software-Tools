@@ -132,6 +132,7 @@ public class CodeWriter {
     }
 
     public CodeWriter(String path) throws IOException {
+        // TODO: update the code here to be similar to the constructor of the Code class in the Assembler, where all the logic is just a series of method calls and no loops
         try{
             List<Path> files = new ArrayList<>();
             Path p = Paths.get(path);
