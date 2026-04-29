@@ -319,6 +319,7 @@ public class CodeWriter {
     }
 
     public CodeWriter(String path) throws IOException {
+        // TODO: 1) replace this constructor with the one from the vm-final branch (includes correct file naming code) >> 2) add writeInit method from vm-final branch
         // TODO: update the code here to be similar to the constructor of the Code class in the Assembler, where all the logic is just a series of method calls and no loops
         try{
             List<Path> files = new ArrayList<>();
