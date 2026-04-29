@@ -27,6 +27,7 @@ import java.util.stream.Stream;
 public class CodeWriter {
     private Parser parser;
     private int SP = 256; /* stack pointer */
+    private int id = 0;
     private final Map<String, Integer> segments = new HashMap<>(Map.ofEntries(
             Map.entry("temp", 5),
             Map.entry("static", 16) // range is 16 - 255 >> usage: static 10 => segments.get("static") + 10
@@ -61,12 +62,11 @@ public class CodeWriter {
                         "D=A",
                         // push value in D onto stack (M[SP])
                         "@SP",
+                        "A=M",
                         "M=D",
                         // increment stack pointer
-                        "@"+(++SP),
-                        "D=A",
                         "@SP",
-                        "M=D"
+                        "M=M+1"
                 ));
             }
             else if(address.equalsIgnoreCase("static") || address.equalsIgnoreCase("temp")){
@@ -77,12 +77,11 @@ public class CodeWriter {
                         "D=M",
                         // push value in D onto stack (M[SP])
                         "@SP",
+                        "A=M",
                         "M=D",
                         // increment stack pointer
-                        "@"+(++SP),
-                        "D=A",
                         "@SP",
-                        "M=D"
+                        "M=M+1"
                 ));
             }
             else{
@@ -92,41 +91,30 @@ public class CodeWriter {
                         "D=M",
                         // push value in D onto stack (M[SP])
                         "@SP",
+                        "A=M",
                         "M=D",
                         // increment stack pointer
-                        "@"+(++SP),
-                        "D=A",
                         "@SP",
-                        "M=D"
+                        "M=M+1"
                 ));
             }
         }
         else {
 
             translatedAssembly.addAll(List.of(
-                    // grab top value from stack
-                    "@"+(SP-1),
+                    // decrement stack pointer and grab top value from stack
+                    "@SP",
+                    "M=M-1",
                     "D=M",
                     // store value in memory location
                     "@"+ (address.equalsIgnoreCase("static") || address.equalsIgnoreCase("temp") ? (segments.get(address)+offset) : pointers.get(address)),
                     "M=D",
-                    // decrement sp
-                    "@"+(--SP),
-                    "D=A",
-                    "@SP",
-                    "M=D",
                     // set old stack top to 0 to finalize pop
-                    "@0",
-                    "D=A",
                     "@SP",
-                    "M=D"
+                    "A=M",
+                    "M=0"
             ));
         }
-    }
-
-    // setting values in memory segment
-    // called when popping
-    private void writeSet(){
     }
 
     private void writeArithmetic(String op) {
@@ -141,60 +129,191 @@ public class CodeWriter {
         if(op.equals("eq") || op.equals("gt") || op.equals("lt")){
             // true if x is greater than y
             // x is @256 and y is at @257
+
             translatedAssembly.addAll(List.of(
-                "@"+(--SP), // x
-                "D=M",
-                "@"+(--SP), // y
-                "M=D-M",
-                "D=M",
-                "@true",
-                booleanMap.get(op),
-                "@false",
-                "0;JMP",
-                "(true)",
-                "@"+(SP++),
-                "M=-1",
-                "@continue",
-                "0;JMP",
-                "(false)",
-                "@"+(SP++),
-                "M=0",
-                "(continue)"
+                    // pop and store temp 0
+                    "@SP",
+                    "M=M-1",
+                    "D=M",
+                    "@"+(segments.get("temp")),
+                    "M=D",
+                    "@SP",
+                    "A=M",
+                    "M=0",
+
+                    // pop and store temp 1
+                    "@SP",
+                    "M=M-1",
+                    "D=M",
+                    "@"+(segments.get("temp") + 1),
+                    "M=D",
+                    "@SP",
+                    "A=M",
+                    "M=0",
+
+                    // do temp 0 - temp 1
+                    "@"+(segments.get("temp")),
+                    "D=M",
+                    "@"+(segments.get("temp") + 1),
+                    "M=D-M",
+
+                    // jump to true label if value in D is true i.e D == -1
+                    "D=M",
+                    "@true_"+(id),
+                    booleanMap.get(op),
+
+                    // jump to false label if false
+                    "@false_"+id,
+                    "0;JMP",
+
+                    // true case >> push -1 onto stack
+                    "(true_"+id+")",
+                    "@1",
+                    "D=A",
+                    "@SP",
+                    "A=M",
+                    "M=-D",
+                    "@SP",
+                    "M=M+1",
+                    "@continue_"+id,
+                    "0;JMP",
+
+                    // false case >> push 0 onto stack
+                    "(false_"+id+")",
+                    "@SP",
+                    "A=M",
+                    "M=0",
+                    "@SP",
+                    "M=M+1",
+
+                    // end of computation
+                    "(continue_"+id+")"
             ));
         }
         else if(op.equals("not")) {
             translatedAssembly.addAll(List.of(
-                "@"+(SP-1),
-                "M=!M"
+                    // pop and store temp 0
+                    "@SP",
+                    "M=M-1",
+                    "D=M",
+                    "@"+(segments.get("temp")),
+                    "M=D",
+                    "@SP",
+                    "A=M",
+                    "M=0",
+
+                    // perform !temp 0
+                    "@"+(segments.get("temp")),
+                    "D=M",
+                    "@SP",
+                    "A=M",
+                    "M=!D",
+
+                    // increment stack pointer
+                    "@SP",
+                    "M=M+1"
             ));
         }
         else if(op.equals("neg")) {
             translatedAssembly.addAll(List.of(
-                "@"+(SP-1),
-                "D=M",
-                "@"+(pointers.get("temp")),
-                "M=D",
-                "M=D+M",
-                "D=M",
-                "@"+(SP-1),
-                "M=M-D"
+                    // pop and store temp 0
+                    "@SP",
+                    "M=M-1",
+                    "D=M",
+                    "@"+(segments.get("temp")),
+                    "M=D",
+                    "@SP",
+                    "A=M",
+                    "M=0",
+
+                    // perform -temp 0 and push to stack
+                    "@"+(segments.get("temp")),
+                    "D=M",
+                    "@SP",
+                    "A=M",
+                    "M=-D",
+
+                    // increment stack pointer
+                    "@SP",
+                    "M=M+1"
             ));
         }
         else if(op.equals("add") || op.equals("sub")){
             translatedAssembly.addAll(List.of(
-                "@"+(--SP),
-                "D=M",
-                "@"+(SP-1),
-                op.equals("add") ? "M=D+M" : "M=M-D"
+                    // pop and store temp 0
+                    "@SP",
+                    "M=M-1",
+                    "D=M",
+                    "@"+(segments.get("temp")),
+                    "M=D",
+                    "@SP",
+                    "A=M",
+                    "M=0",
 
+                    // pop and store temp 1
+                    "@SP",
+                    "M=M-1",
+                    "D=M",
+                    "@"+(segments.get("temp") + 1),
+                    "M=D",
+                    "@SP",
+                    "A=M",
+                    "M=0",
+
+                    // do temp 0 +/- temp 1
+                    "@"+(segments.get("temp")),
+                    "D=M",
+                    "@"+(segments.get("temp") + 1),
+                    op.equalsIgnoreCase("add") ? "M=D+M" : "M=D-M",
+
+                    // push result to stack
+                    "D=M",
+                    "@SP",
+                    "A=M",
+                    "M=D",
+
+                    // increment stack pointer
+                    "@SP",
+                    "M=M+1"
             ));
         }
         else if(op.equals("and") || op.equals("or")){
             translatedAssembly.addAll(List.of(
-                "@"+(--SP),
-                "D=M",
-                "@"+(SP-1),
-                op.equals("and") ? "M=D&M" : "M=D|M"
+                    // pop and store temp 0
+                    "@SP",
+                    "M=M-1",
+                    "D=M",
+                    "@"+(segments.get("temp")),
+                    "M=D",
+                    "@SP",
+                    "A=M",
+                    "M=0",
+
+                    // pop and store temp 1
+                    "@SP",
+                    "M=M-1",
+                    "D=M",
+                    "@"+(segments.get("temp") + 1),
+                    "M=D",
+                    "@SP",
+                    "A=M",
+                    "M=0",
+
+                    // do temp 0 +/- temp 1
+                    "@"+(segments.get("temp")),
+                    "D=M",
+                    "@"+(segments.get("temp") + 1),
+                    op.equalsIgnoreCase("and") ? "M=D&M" : "M=D|M",
+
+                    // push result to stack
+                    "D=M",
+                    "@SP",
+                    "A=M",
+                    "M=D",
+
+                    // increment stack pointer
+                    "@SP",
+                    "M=M+1"
             ));
         }
     }

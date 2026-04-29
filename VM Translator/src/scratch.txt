@@ -1,0 +1,60 @@
+grab top two values of stack and store in
+temp 0 and temp 1
+
+// pop and store temp 0
+"@SP",
+"M=M-1",
+"D=M",
+"@5"
+"M=D",
+"@SP",
+"A=M",
+"M=0"
+
+// pop and store temp 1
+"@SP",
+"M=M-1",
+"D=M",
+"@6"
+"M=D",
+"@SP",
+"A=M",
+"M=0"
+
+// do temp 0 - temp 1
+"@"+(segments.get("temp"))
+"D=M"
+"@6"
+"M=D-M"
+"D=M"
+
+// jump to true label if true
+"@true_"+(id),
+booleanMap.get(op),
+
+// jump to false label if false
+"@false_"+id,
+"0;JMP",
+
+// true case >> push -1 onto stack
+ "(true_"+id+")",
+"@1",
+"D=A",
+"@SP",
+"A=M",
+"M=-D",
+"@SP",
+"M=M+1"
+"@continue_"+id,
+"0;JMP"
+
+ // false case >> push 0 onto stack
+"(false_"+id+")",
+"@SP",
+"A=M",
+"M=0",
+"@SP",
+"M=M+1"
+
+// end of computation
+"(continue_"+id+")"
