@@ -27,38 +27,106 @@ import java.util.stream.Stream;
 public class CodeWriter {
     private Parser parser;
     private int SP = 256; /* stack pointer */
-    private final Map<String, Integer> baseAddr = new HashMap<>(Map.of(
-            "local", 300,
-            "argument", 400,
-            "this", 3000,
-            "that", 3010,
-            "pointer 0", 3,
-            "pointer 1", 4,
-            "temp", 5,
-            "static", 16
+    private final Map<String, Integer> segments = new HashMap<>(Map.ofEntries(
+            Map.entry("temp", 5),
+            Map.entry("static", 16) // range is 16 - 255 >> usage: static 10 => segments.get("static") + 10
+    ));
+    private final Map<String, Integer> pointers = new HashMap<>(Map.ofEntries(
+            Map.entry("SP", 0),
+            Map.entry("LCL", 1),
+            Map.entry("ARG", 2),
+            Map.entry("THIS", 3),
+            Map.entry("THAT", 4),
+            Map.entry("R13", 13),
+            Map.entry("R14", 14),
+            Map.entry("R15", 15)
     ));
     private final List<String> translatedAssembly = new ArrayList<>();
 
-    private void writePushPop(CType ct, String seg, int idx) {
-        // PUSHING
-        // push constant 10 // @10 D=A @SP++ M=D
-        // push that 5 // @baseAddr.that+5 D=A @SP++ M=D
+    private void writePushPop(CType ct) {
+        String address = parser.argOne();
+        int offset = parser.hasArgTwo() ? parser.argTwo() : -1;
 
-        // POPPING:
-        // NOTE: constants are never popped
-        // pop local 0 // @--SP D=M @baseAddr.local+0 M=D
-
-        if(!seg.equals("constant") && !baseAddr.containsKey(seg)) {
-            System.out.printf("\u001B[31mInvalid segment: %s \u001B[0m", seg);
+        if(!address.equals("constant") && (!pointers.containsKey(address) || (!segments.containsKey(address)))) {
+            System.out.printf("\u001B[31mInvalid memory segment name: %s \u001B[0m", address);
             throw new RuntimeException();
         }
 
         if(ct.equals(CType.C_PUSH)){
-            translatedAssembly.addAll(List.of(seg.equals("constant") ? "@"+idx : "@"+(baseAddr.get(seg)+idx), seg.equals("constant") ? "D=A" : "D=M", "@"+(this.SP++), "M=D"));
+            if(address.equalsIgnoreCase("constant")){
+                int constant = parser.argTwo();
+                translatedAssembly.addAll(List.of(
+                        // store constant in D
+                        "@"+constant,
+                        "D=A",
+                        // push value in D onto stack (M[SP])
+                        "@SP",
+                        "M=D",
+                        // increment stack pointer
+                        "@"+(++SP),
+                        "D=A",
+                        "@SP",
+                        "M=D"
+                ));
+            }
+            else if(address.equalsIgnoreCase("static") || address.equalsIgnoreCase("temp")){
+                // pushing value of static x onto stack
+                translatedAssembly.addAll(List.of(
+                        // get value from memory >> store in D
+                        "@"+(segments.get(address)+offset),
+                        "D=M",
+                        // push value in D onto stack (M[SP])
+                        "@SP",
+                        "M=D",
+                        // increment stack pointer
+                        "@"+(++SP),
+                        "D=A",
+                        "@SP",
+                        "M=D"
+                ));
+            }
+            else{
+                translatedAssembly.addAll(List.of(
+                        // get value from memory >> store in D
+                        "@"+pointers.get(address),
+                        "D=M",
+                        // push value in D onto stack (M[SP])
+                        "@SP",
+                        "M=D",
+                        // increment stack pointer
+                        "@"+(++SP),
+                        "D=A",
+                        "@SP",
+                        "M=D"
+                ));
+            }
         }
         else {
-            translatedAssembly.addAll(List.of("@"+(--this.SP), "D=M", "@"+(baseAddr.get(seg)+idx), "M=D"));
+
+            translatedAssembly.addAll(List.of(
+                    // grab top value from stack
+                    "@"+(SP-1),
+                    "D=M",
+                    // store value in memory location
+                    "@"+ (address.equalsIgnoreCase("static") || address.equalsIgnoreCase("temp") ? (segments.get(address)+offset) : pointers.get(address)),
+                    "M=D",
+                    // decrement sp
+                    "@"+(--SP),
+                    "D=A",
+                    "@SP",
+                    "M=D",
+                    // set old stack top to 0 to finalize pop
+                    "@0",
+                    "D=A",
+                    "@SP",
+                    "M=D"
+            ));
         }
+    }
+
+    // setting values in memory segment
+    // called when popping
+    private void writeSet(){
     }
 
     private void writeArithmetic(String op) {
@@ -104,7 +172,7 @@ public class CodeWriter {
             translatedAssembly.addAll(List.of(
                 "@"+(SP-1),
                 "D=M",
-                "@"+(baseAddr.get("temp")),
+                "@"+(pointers.get("temp")),
                 "M=D",
                 "M=D+M",
                 "D=M",
@@ -161,7 +229,7 @@ public class CodeWriter {
                 while(parser.hasMoreCommands()) {
                     parser.advance();
                     CType ct = parser.commandType();
-                    if(ct.equals(CType.C_PUSH) || ct.equals(CType.C_POP)) writePushPop(ct, parser.argOne(), parser.argTwo());
+                    if(ct.equals(CType.C_PUSH) || ct.equals(CType.C_POP)) writePushPop(ct);
                     else if(ct.equals(CType.C_ARITHMETIC)) writeArithmetic(parser.argOne());
                 }
             }

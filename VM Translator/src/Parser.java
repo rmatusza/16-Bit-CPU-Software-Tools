@@ -52,6 +52,11 @@ public class Parser {
         return arg2;
     }
 
+    public boolean hasArgTwo(){
+        if(currCom.size() < 3) return false;
+        return true;
+    }
+
     private String removeComments(String com) {
         int commentIdx = com.indexOf("//");
         if (commentIdx != -1) {
