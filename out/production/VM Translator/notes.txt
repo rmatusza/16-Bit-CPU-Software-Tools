@@ -1,0 +1,25 @@
+- DONE - don't set values on stack to 0
+- DONE - fix static variables
+- DONE - fix add/sub logic
+
+"@SP",
+"M=M-1",
+"A=M",
+"D=M",
+
+// D = top of stack value
+
+"@"+address,
+"D=A"
+"@"+offset
+"D=D+A"
+"@5"
+"M=D" // store address in temp var
+
+"@SP"
+"M=M-1"
+"A=M" // A equals stack pointer
+"D=M" // D equals top of stack value
+"@5"
+"A=M" // A = M[5] = address to store value
+"M=D" // M[address] = D
