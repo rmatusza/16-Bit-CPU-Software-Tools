@@ -1,5 +1,5 @@
 # Overview
-This repository contains software tools that make up the translation pipeline from high-level code down to machine code that is executable on a 16-bit computer
+This repository contains software tools that make up the translation pipeline from high-level code down to machine code, which is executable on a 16-bit computer
 
 The process follows these stages:
 
@@ -7,7 +7,7 @@ High-level language → VM code → Assembly → Binary
 
 - A compiler translates high-level code into VM instructions
 - The VM Translator converts VM instructions into assembly
-- The Assembler converts assembly into binary machine code executable on the 16-bit Hack computer
+- The Assembler converts assembly into binary machine code executable on the 16-bit computer
 
 ## Example 
 - Below is visual example of what each stage of the code looks like
