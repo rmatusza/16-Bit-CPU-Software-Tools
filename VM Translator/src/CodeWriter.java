@@ -1,3 +1,5 @@
+import util.TranslationUtil;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -27,22 +29,15 @@ import java.util.stream.Stream;
 public class CodeWriter {
     private Parser parser;
     private int id = 0;
-    private String fileName;
+    private String filename;
+    private StringBuilder assembly = new StringBuilder();
+    private TranslationUtil transUtil= new TranslationUtil();
     private final Map<String, Integer> segments = new HashMap<>(Map.ofEntries(
             Map.entry("temp", 5),
             Map.entry("local", 1),
             Map.entry("argument", 2)
     ));
-    private final Map<String, Integer> pointers = new HashMap<>(Map.ofEntries(
-            Map.entry("SP", 0),
-            Map.entry("LCL", 1),
-            Map.entry("ARG", 2),
-            Map.entry("THIS", 3),
-            Map.entry("THAT", 4),
-            Map.entry("R13", 13),
-            Map.entry("R14", 14),
-            Map.entry("R15", 15)
-    ));
+
     private final List<String> translatedAssembly = new ArrayList<>();
 
     private void writePushPop(CType ct) {
@@ -91,7 +86,7 @@ public class CodeWriter {
             }
             else if(address.equalsIgnoreCase("static")){
                 translatedAssembly.addAll(List.of(
-                        "@"+fileName+"."+offset,
+                        "@"+filename+"."+offset,
                         "D=M",
                         "@SP",
                         "A=M",
@@ -126,18 +121,8 @@ public class CodeWriter {
                         "M=M+1"
                 ));
             }
-            else{
-                translatedAssembly.addAll(List.of(
-                        "@"+pointers.get(address),
-                        "D=M",
-                        "@SP",
-                        "A=M",
-                        "M=D",
-                        "@SP",
-                        "M=M+1"
-                ));
-            }
         }
+        /* pop */
         else {
 
             if(address.equalsIgnoreCase("static")){
@@ -146,7 +131,7 @@ public class CodeWriter {
                         "M=M-1",
                         "A=M",
                         "D=M",
-                        "@"+fileName+"."+offset,
+                        "@"+filename+"."+offset,
                         "M=D"
                 ));
             }
@@ -178,7 +163,6 @@ public class CodeWriter {
                         "D=D+A",
                         "@"+(segments.get("temp")),
                         "M=D",
-
                         "@SP",
                         "M=M-1",
                         "A=M",
@@ -202,16 +186,6 @@ public class CodeWriter {
                         "D=M",
                         "@"+(segments.get("temp")),
                         "A=M",
-                        "M=D"
-                ));
-            }
-            else{
-                translatedAssembly.addAll(List.of(
-                        "@SP",
-                        "M=M-1",
-                        "A=M",
-                        "D=M",
-                        "@"+ pointers.get(address),
                         "M=D"
                 ));
             }
@@ -313,23 +287,11 @@ public class CodeWriter {
                     "@SP",
                     "M=M-1",
                     "A=M",
-                    "D=M",
-                    "@"+(segments.get("temp")),
-                    "M=D",
+                    "D=M", // y
                     "@SP",
                     "M=M-1",
-                    "A=M",
-                    "D=M",
-                    "@"+(segments.get("temp") + 1),
-                    "M=D",
-                    "@"+(segments.get("temp")),
-                    "D=M",
-                    "@"+(segments.get("temp") + 1),
-                    op.equalsIgnoreCase("and") ? "M=D&M" : "M=D|M",
-                    "D=M",
-                    "@SP",
-                    "A=M",
-                    "M=D",
+                    "A=M", // x
+                    op.equalsIgnoreCase("and") ? "M=M&D" : "M=M|D",
                     "@SP",
                     "M=M+1"
             ));
@@ -347,23 +309,23 @@ public class CodeWriter {
                 out = p.resolve(file);
                 try (Stream<Path> paths = Files.list(p)) {
                     paths.forEach(pat -> {
-                        String fileName = pat.getFileName().toString();
-                        if(fileName.substring(fileName.lastIndexOf(".")+1).equals("vm")) files.add(pat);
+                        String filename = pat.getFileName().toString();
+                        if(filename.substring(filename.lastIndexOf(".")+1).equals("vm")) files.add(pat);
                     });
                 }
             }
             else{
-                String fileNameWE = p.getFileName().toString();
-                String fileName = fileNameWE.substring(0, fileNameWE.indexOf("."));
+                String filenameWE = p.getFileName().toString();
+                String filename = filenameWE.substring(0, filenameWE.indexOf("."));
 
-                out = p.getParent().resolve(fileName+".asm");
+                out = p.getParent().resolve(filename+".asm");
 
-                if(fileNameWE.substring(fileNameWE.lastIndexOf(".")+1).equals("vm")) files.add(p);
+                if(filenameWE.substring(filenameWE.lastIndexOf(".")+1).equals("vm")) files.add(p);
             }
 
             for(var f : files) {
                 this.parser = new Parser(f);
-                fileName = f.getFileName().toString();
+                filename = f.getFileName().toString();
                 while(parser.hasMoreCommands()) {
                     parser.advance();
                     CType ct = parser.commandType();
@@ -371,7 +333,7 @@ public class CodeWriter {
                     else if(ct.equals(CType.C_ARITHMETIC)) writeArithmetic(parser.argOne());
                 }
             }
-            Files.write(out, translatedAssembly, StandardCharsets.UTF_8, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+            Files.write(out, translatedAssembly, StandardCharsets.UTF_8, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
         }
         catch(RuntimeException | IOException e) {
             System.out.printf("\u001B[31m%s\u001B[0m", e);
