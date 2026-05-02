@@ -1,4 +1,4 @@
-import util.TranslationUtil;
+import util.TranslatorUtil;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -31,11 +31,20 @@ public class CodeWriter {
     private int id = 0;
     private String filename;
     private StringBuilder assembly = new StringBuilder();
-    private TranslationUtil transUtil= new TranslationUtil();
+    private TranslatorUtil transUtil= new TranslatorUtil();
     private final Map<String, Integer> segments = new HashMap<>(Map.ofEntries(
-            Map.entry("temp", 5),
             Map.entry("local", 1),
             Map.entry("argument", 2)
+    ));
+    private final Map<Integer, String> tempLocations = new HashMap<>(Map.of(
+            0, "R5",
+            1, "R6",
+            2, "R7",
+            3, "R8",
+            4, "R9",
+            5, "R10",
+            6, "R11",
+            7, "R12"
     ));
 
     private final List<String> translatedAssembly = new ArrayList<>();
@@ -47,147 +56,43 @@ public class CodeWriter {
         if(ct.equals(CType.C_PUSH)){
             if(address.equalsIgnoreCase("constant")){
                 int constant = parser.argTwo();
-                translatedAssembly.addAll(List.of(
-                        "@"+constant,
-                        "D=A",
-                        "@SP",
-                        "A=M",
-                        "M=D",
-                        "@SP",
-                        "M=M+1"
-                ));
+                assembly.append(transUtil.push(constant, 0, false)).append(transUtil.incrementSP());
             }
             else if(address.equalsIgnoreCase("temp")){
-                translatedAssembly.addAll(List.of(
-                        "@"+(segments.get(address)+offset),
-                        "D=M",
-                        "@SP",
-                        "A=M",
-                        "M=D",
-                        "@SP",
-                        "M=M+1"
-                ));
+                assembly.append(transUtil.push(tempLocations.get(offset), 0, false)).append(transUtil.incrementSP());
             }
             else if(address.equalsIgnoreCase("local") || address.equalsIgnoreCase("argument")){
-                // push the value that the pointer is pointing to onto the stack
-                translatedAssembly.addAll(List.of(
-                        "@"+(address.equalsIgnoreCase("local") ? "LCL" : "ARG"),
-                        "A=M",
-                        "D=A",
-                        "@"+offset,
-                        "A=D+A",
-                        "D=M",
-                        "@SP",
-                        "A=M",
-                        "M=D",
-                        "@SP",
-                        "M=M+1"
-                ));
+                assembly.append(transUtil.push((address.equalsIgnoreCase("local") ? "LCL" : "ARG"), offset, true)).append(transUtil.incrementSP());
             }
             else if(address.equalsIgnoreCase("static")){
-                translatedAssembly.addAll(List.of(
-                        "@"+filename+"."+offset,
-                        "D=M",
-                        "@SP",
-                        "A=M",
-                        "M=D",
-                        "@SP",
-                        "M=M+1"
-                ));
+                assembly.append(transUtil.push(filename+"."+offset, 0, false)).append(transUtil.incrementSP());
             }
             else if(address.equalsIgnoreCase("pointer")){
-                translatedAssembly.addAll(List.of(
-                        "@"+(offset == 0 ? "THIS" : "THAT"),
-                        "D=M",
-                        "@SP",
-                        "A=M",
-                        "M=D",
-                        "@SP",
-                        "M=M+1"
-                ));
+                assembly.append(transUtil.push((offset == 0 ? "THIS" : "THAT"), 0, false)).append(transUtil.incrementSP());
             }
             else if(address.equalsIgnoreCase("THIS") || address.equalsIgnoreCase("THAT")){
-                translatedAssembly.addAll(List.of(
-                        "@"+address.toUpperCase(),
-                        "A=M",
-                        "D=A",
-                        "@"+offset,
-                        "A=D+A",
-                        "D=M",
-                        "@SP",
-                        "A=M",
-                        "M=D",
-                        "@SP",
-                        "M=M+1"
-                ));
+                assembly.append(transUtil.push(address.toUpperCase(), offset, true)).append(transUtil.incrementSP());
             }
         }
-        /* pop */
         else {
-
             if(address.equalsIgnoreCase("static")){
-                translatedAssembly.addAll(List.of(
-                        "@SP",
-                        "M=M-1",
-                        "A=M",
-                        "D=M",
-                        "@"+filename+"."+offset,
-                        "M=D"
-                ));
+                assembly.append(transUtil.pop()).append(transUtil.writeDToM(filename+"."+offset));
             }
             else if(address.equalsIgnoreCase("temp")){
-                translatedAssembly.addAll(List.of(
-                        "@SP",
-                        "M=M-1",
-                        "A=M",
-                        "D=M",
-                        "@"+(segments.get(address)+offset),
-                        "M=D"
-                ));
+                assembly.append(transUtil.pop()).append(transUtil.writeDToM((tempLocations.get(offset))));
             }
             else if(address.equalsIgnoreCase("pointer")){
-                translatedAssembly.addAll(List.of(
-                        "@SP",
-                        "M=M-1",
-                        "A=M",
-                        "D=M",
-                        "@"+(offset == 0 ? "THIS" : "THAT"),
-                        "M=D"
-                ));
+                assembly.append(transUtil.pop()).append(transUtil.writeDToM((offset == 0 ? "THIS" : "THAT")));
             }
             else if(address.equalsIgnoreCase("THIS") || address.equalsIgnoreCase("THAT")){
-                translatedAssembly.addAll(List.of(
-                        "@"+address.toUpperCase(),
-                        "D=M",
-                        "@"+offset,
-                        "D=D+A",
-                        "@"+(segments.get("temp")),
-                        "M=D",
-                        "@SP",
-                        "M=M-1",
-                        "A=M",
-                        "D=M",
-                        "@"+(segments.get("temp")),
-                        "A=M",
-                        "M=D"
-                ));
+                assembly.append(transUtil.saveOffsetAddrToTemp(address.toUpperCase(), offset, "R13"))
+                        .append(transUtil.pop())
+                        .append(transUtil.writeDToMViaPointer("R13"));
             }
             else if(address.equalsIgnoreCase("local") || address.equalsIgnoreCase("argument")){
-                translatedAssembly.addAll(List.of(
-                        "@"+(address.equalsIgnoreCase("local") ? "LCL" : "ARG"),
-                        "D=M",
-                        "@"+offset,
-                        "D=D+A",
-                        "@"+(segments.get("temp")),
-                        "M=D",
-                        "@SP",
-                        "M=M-1",
-                        "A=M",
-                        "D=M",
-                        "@"+(segments.get("temp")),
-                        "A=M",
-                        "M=D"
-                ));
+                assembly.append(transUtil.saveOffsetAddrToTemp((address.equalsIgnoreCase("local") ? "LCL" : "ARG"), offset, "R13"))
+                        .append(transUtil.pop())
+                        .append(transUtil.writeDToMViaPointer("R13"));
             }
         }
     }
@@ -200,101 +105,24 @@ public class CodeWriter {
         );
 
         if(op.equals("eq") || op.equals("gt") || op.equals("lt")){
-            translatedAssembly.addAll(List.of(
-                    "@SP",
-                    "M=M-1",
-                    "A=M",
-                    "D=M", // y
-                    "@SP",
-                    "M=M-1",
-                    "A=M", // x
-                    "M=M-D",
-                    "D=M",
-                    "@true_"+(id),
-                    booleanMap.get(op),
-                    "@false_"+id,
-                    "0;JMP",
-                    "(true_"+id+")",
-                    "@1",
-                    "D=A",
-                    "@SP",
-                    "A=M",
-                    "M=-D",
-                    "@SP",
-                    "M=M+1",
-                    "@continue_"+id,
-                    "0;JMP",
-                    "(false_"+id+")",
-                    "@SP",
-                    "A=M",
-                    "M=0",
-                    "@SP",
-                    "M=M+1",
-                    "(continue_"+id+")"
-            ));
+            assembly.append(transUtil.binaryOp("sub"))
+                    .append(transUtil.pop())
+                    .append("@true_").append(id).append(" ")
+                    .append(booleanMap.get(op)).append(" ")
+                    .append("@false_").append(id).append(" ")
+                    .append("0;JMP").append(" ")
+                    .append(transUtil.writeTrueFlag(id))
+                    .append("@continue_").append(id).append(" ")
+                    .append("0;JMP").append(" ")
+                    .append(transUtil.writeFalseFlag(id))
+                    .append("(continue_").append(id).append(") ");
             id++;
         }
-        else if(op.equals("not")) {
-            translatedAssembly.addAll(List.of(
-                    "@SP",
-                    "M=M-1",
-                    "A=M",
-                    "D=M",
-                    "@"+(segments.get("temp")),
-                    "M=D",
-                    "@"+(segments.get("temp")),
-                    "D=M",
-                    "@SP",
-                    "A=M",
-                    "M=!D",
-                    "@SP",
-                    "M=M+1"
-            ));
+        else if(op.equals("not") || op.equals("neg")) {
+            assembly.append(transUtil.unaryOp(op));
         }
-        else if(op.equals("neg")) {
-            translatedAssembly.addAll(List.of(
-                    "@SP",
-                    "M=M-1",
-                    "A=M",
-                    "D=M",
-                    "@"+(segments.get("temp")),
-                    "M=D",
-                    "@"+(segments.get("temp")),
-                    "D=M",
-                    "@SP",
-                    "A=M",
-                    "M=-D",
-                    "@SP",
-                    "M=M+1"
-            ));
-        }
-        else if(op.equals("add") || op.equals("sub")){
-            translatedAssembly.addAll(List.of(
-                    "@SP",
-                    "M=M-1",
-                    "A=M",
-                    "D=M", // y
-                    "@SP",
-                    "M=M-1",
-                    "A=M", // x
-                    op.equalsIgnoreCase("add") ? "M=M+D" : "M=M-D",
-                    "@SP",
-                    "M=M+1"
-            ));
-        }
-        else if(op.equals("and") || op.equals("or")){
-            translatedAssembly.addAll(List.of(
-                    "@SP",
-                    "M=M-1",
-                    "A=M",
-                    "D=M", // y
-                    "@SP",
-                    "M=M-1",
-                    "A=M", // x
-                    op.equalsIgnoreCase("and") ? "M=M&D" : "M=M|D",
-                    "@SP",
-                    "M=M+1"
-            ));
+        else if(op.equals("add") || op.equals("sub") || op.equals("and") || op.equals("or")){
+            assembly.append(transUtil.binaryOp(op));
         }
     }
 
@@ -333,6 +161,8 @@ public class CodeWriter {
                     else if(ct.equals(CType.C_ARITHMETIC)) writeArithmetic(parser.argOne());
                 }
             }
+
+            translatedAssembly.addAll(List.of(assembly.toString().stripTrailing().split(" ")));
             Files.write(out, translatedAssembly, StandardCharsets.UTF_8, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
         }
         catch(RuntimeException | IOException e) {

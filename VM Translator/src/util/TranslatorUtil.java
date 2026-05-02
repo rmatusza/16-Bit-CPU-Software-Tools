@@ -3,13 +3,7 @@ package util;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TranslationUtil {
-
-    private final Map<String, Integer> segments = new HashMap<>(Map.ofEntries(
-            Map.entry("temp", 5),
-            Map.entry("local", 1),
-            Map.entry("argument", 2)
-    ));
+public class TranslatorUtil {
     private final Map<String, String> operations = new HashMap<>(Map.of(
             "add", "+",
             "sub", "-",
@@ -19,38 +13,49 @@ public class TranslationUtil {
             "neg", "-"
     ));
 
-    private String getAddressCommand(String segment){
-        if (segment.equalsIgnoreCase("local")) return "LCL";
-        else if(segment.equalsIgnoreCase("argument")) return "ARG";
-        else return segment.toUpperCase();
-    }
-
-    public String saveOffsetAddrToTemp(String address, int offset, String segment){
+    public String saveOffsetAddrToTemp(String address, int offset, String temp){
         return
-                "@"+getAddressCommand(segment)+" "+
+                "@"+address+" "+
                 "D=M "+
                 "@"+offset+" "+
                 "D=D+A "+
-                "@"+(segments.get("temp"))+" "+
+                "@"+temp+" "+
                 "M=D ";
-    }
-
-    public String writeMToD(String address){
-        return
-                "@"+address+" "+
-                "D=M ";
-    }
-
-    public String writeAToD(int val){
-        return
-                "@"+val+" "+
-                "D=A ";
     }
 
     public String writeDToM(String address){
         return
                 "@"+address+" "+
                 "M=D ";
+    }
+
+    public String writeDToMViaPointer(String address){
+        return
+                "@"+address+" "+
+                "A=M "+
+                "M=D ";
+    }
+
+    public String push(int address, int offset, boolean hasOffset){
+        if(!hasOffset){
+            return
+                    "@"+address+" "+
+                    "D=A "+
+                    "@SP "+
+                    "A=M "+
+                    "M=D ";
+        }
+        else{
+            return
+                    "@"+address+" "+
+                    "D=M "+
+                    "@"+offset+" "+
+                    "A=D+A "+
+                    "D=M "+
+                    "@SP "+
+                    "A=M "+
+                    "M=D ";
+        }
     }
 
     public String push(String address, int offset, boolean hasOffset){
@@ -65,8 +70,7 @@ public class TranslationUtil {
         else{
             return
                     "@"+address+" "+
-                    "A=M "+
-                    "D=A "+
+                    "D=M "+
                     "@"+offset+" "+
                     "A=D+A "+
                     "D=M "+
@@ -99,12 +103,12 @@ public class TranslationUtil {
 
     public String binaryOp(String op){
         String symbol = operations.get(op);
-        return "M=M"+symbol+"D ";
+        return pop() + popForOp() + "M=M"+symbol+"D " + incrementSP();
     }
 
    public String unaryOp(String op){
         String symbol = operations.get(op);
-        return "M="+symbol+"D ";
+        return pop() + "M="+symbol+"D " + incrementSP();
    }
 
    public String writeTrueFlag(int id){
@@ -114,7 +118,8 @@ public class TranslationUtil {
                 "D=A "+
                 "@SP "+
                 "A=M "+
-                "M=-D ";
+                "M=-D "+
+                incrementSP();
    }
 
    public String writeFalseFlag(int id){
@@ -122,6 +127,7 @@ public class TranslationUtil {
                 "(false_"+id+") "+
                 "@SP "+
                 "A=M "+
-                "M=0 ";
+                "M=0 "+
+                incrementSP();
    }
 }
