@@ -30,12 +30,8 @@ public class CodeWriter {
     private Parser parser;
     private int id = 0;
     private String filename;
-    private StringBuilder assembly = new StringBuilder();
-    private TranslatorUtil transUtil= new TranslatorUtil();
-    private final Map<String, Integer> segments = new HashMap<>(Map.ofEntries(
-            Map.entry("local", 1),
-            Map.entry("argument", 2)
-    ));
+    private final StringBuilder assembly = new StringBuilder();
+    private final TranslatorUtil transUtil= new TranslatorUtil();
     private final Map<Integer, String> tempLocations = new HashMap<>(Map.of(
             0, "R5",
             1, "R6",
@@ -47,8 +43,6 @@ public class CodeWriter {
             7, "R12"
     ));
 
-    private final List<String> translatedAssembly = new ArrayList<>();
-
     private void writePushPop(CType ct) {
         String address = parser.argOne();
         int offset = parser.hasArgTwo() ? parser.argTwo() : -1;
@@ -56,22 +50,22 @@ public class CodeWriter {
         if(ct.equals(CType.C_PUSH)){
             if(address.equalsIgnoreCase("constant")){
                 int constant = parser.argTwo();
-                assembly.append(transUtil.push(constant, 0, false)).append(transUtil.incrementSP());
+                assembly.append(transUtil.push(constant, 0, false));
             }
             else if(address.equalsIgnoreCase("temp")){
-                assembly.append(transUtil.push(tempLocations.get(offset), 0, false)).append(transUtil.incrementSP());
+                assembly.append(transUtil.push(tempLocations.get(offset), 0, false));
             }
             else if(address.equalsIgnoreCase("local") || address.equalsIgnoreCase("argument")){
-                assembly.append(transUtil.push((address.equalsIgnoreCase("local") ? "LCL" : "ARG"), offset, true)).append(transUtil.incrementSP());
+                assembly.append(transUtil.push((address.equalsIgnoreCase("local") ? "LCL" : "ARG"), offset, true));
             }
             else if(address.equalsIgnoreCase("static")){
-                assembly.append(transUtil.push(filename+"."+offset, 0, false)).append(transUtil.incrementSP());
+                assembly.append(transUtil.push(filename+"."+offset, 0, false));
             }
             else if(address.equalsIgnoreCase("pointer")){
-                assembly.append(transUtil.push((offset == 0 ? "THIS" : "THAT"), 0, false)).append(transUtil.incrementSP());
+                assembly.append(transUtil.push((offset == 0 ? "THIS" : "THAT"), 0, false));
             }
             else if(address.equalsIgnoreCase("THIS") || address.equalsIgnoreCase("THAT")){
-                assembly.append(transUtil.push(address.toUpperCase(), offset, true)).append(transUtil.incrementSP());
+                assembly.append(transUtil.push(address.toUpperCase(), offset, true));
             }
         }
         else {
@@ -126,7 +120,7 @@ public class CodeWriter {
         }
     }
 
-    public CodeWriter(String path) throws IOException {
+    public CodeWriter(String path) {
         try{
             List<Path> files = new ArrayList<>();
             Path p = Paths.get(path);
@@ -162,7 +156,7 @@ public class CodeWriter {
                 }
             }
 
-            translatedAssembly.addAll(List.of(assembly.toString().stripTrailing().split(" ")));
+            List<String> translatedAssembly = new ArrayList<>(List.of(assembly.toString().stripTrailing().split(" ")));
             Files.write(out, translatedAssembly, StandardCharsets.UTF_8, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
         }
         catch(RuntimeException | IOException e) {

@@ -43,7 +43,8 @@ public class TranslatorUtil {
                     "D=A "+
                     "@SP "+
                     "A=M "+
-                    "M=D ";
+                    "M=D "+
+                    incrementSP();
         }
         else{
             return
@@ -54,7 +55,8 @@ public class TranslatorUtil {
                     "D=M "+
                     "@SP "+
                     "A=M "+
-                    "M=D ";
+                    "M=D "+
+                    incrementSP();
         }
     }
 
@@ -65,7 +67,8 @@ public class TranslatorUtil {
                     "D=M "+
                     "@SP "+
                     "A=M "+
-                    "M=D ";
+                    "M=D "+
+                    incrementSP();
         }
         else{
             return
@@ -76,7 +79,8 @@ public class TranslatorUtil {
                     "D=M "+
                     "@SP "+
                     "A=M "+
-                    "M=D ";
+                    "M=D "+
+                    incrementSP();
         }
     }
 
