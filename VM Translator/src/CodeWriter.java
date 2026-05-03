@@ -6,85 +6,55 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 public class CodeWriter {
     private Parser parser;
     private String filename;
+    private String modifier;
     private final TranslatorUtil transUtil= new TranslatorUtil();
-    private final Map<Integer, String> tempLocations = new HashMap<>(Map.of(
-            0, "R5",
-            1, "R6",
-            2, "R7",
-            3, "R8",
-            4, "R9",
-            5, "R10",
-            6, "R11",
-            7, "R12"
+    private final Set<String> hasOffsetAddress = new HashSet<>(Set.of("local", "argument", "this", "that"));
+    private final Map<String, String> booleanMap = Map.of(
+            "eq", "D;JEQ",
+            "lt", "D;JLT",
+            "gt", "D;JGT"
+    );
+    private final Map<String, String> tempLocations = new HashMap<>(Map.of(
+            "0", "R5",
+            "1", "R6",
+            "2", "R7",
+            "3", "R8",
+            "4", "R9",
+            "5", "R10",
+            "6", "R11",
+            "7", "R12"
+    ));
+    private final Map<String, Supplier<String>> addressMap = new HashMap<>(Map.ofEntries(
+            Map.entry("temp", () -> tempLocations.get(modifier)),
+            Map.entry("local", () -> "LCL"),
+            Map.entry("argument", () -> "ARG"),
+            Map.entry("static", () -> filename+"."+modifier),
+            Map.entry("pointer", () -> (modifier.equalsIgnoreCase("0") ? "THIS" : "THAT")),
+            Map.entry("this", () -> "THIS"),
+            Map.entry("that", () -> "THAT")
     ));
 
     private void writePushPop(CType ct) {
+        modifier = parser.argTwo();
         String address = parser.argOne();
-        int offset = parser.hasArgTwo() ? parser.argTwo() : -1;
+        String offset = hasOffsetAddress.contains(address) ? modifier : "";
 
         if(ct.equals(CType.C_PUSH)){
-            if(address.equalsIgnoreCase("constant")){
-                int constant = parser.argTwo();
-                transUtil.push(constant, 0, false);
-            }
-            else if(address.equalsIgnoreCase("temp")){
-                transUtil.push(tempLocations.get(offset), 0, false);
-            }
-            else if(address.equalsIgnoreCase("local") || address.equalsIgnoreCase("argument")){
-                transUtil.push((address.equalsIgnoreCase("local") ? "LCL" : "ARG"), offset, true);
-            }
-            else if(address.equalsIgnoreCase("static")){
-                transUtil.push(filename+"."+offset, 0, false);
-            }
-            else if(address.equalsIgnoreCase("pointer")){
-                transUtil.push((offset == 0 ? "THIS" : "THAT"), 0, false);
-            }
-            else if(address.equalsIgnoreCase("THIS") || address.equalsIgnoreCase("THAT")){
-                transUtil.push(address.toUpperCase(), offset, true);
-            }
+            transUtil.push(addressMap.getOrDefault(address, () -> modifier).get(), offset);
         }
         else {
-            if(address.equalsIgnoreCase("static")){
-                transUtil.pop();
-                transUtil.writeDToM(filename+"."+offset);
-            }
-            else if(address.equalsIgnoreCase("temp")){
-                transUtil.pop();
-                transUtil.writeDToM((tempLocations.get(offset)));
-            }
-            else if(address.equalsIgnoreCase("pointer")){
-                transUtil.pop();
-                transUtil.writeDToM((offset == 0 ? "THIS" : "THAT"));
-            }
-            else if(address.equalsIgnoreCase("THIS") || address.equalsIgnoreCase("THAT")){
-                transUtil.saveOffsetAddrToTemp(address.toUpperCase(), offset, "R13");
-                transUtil.pop();
-                transUtil.writeDToMViaPointer("R13");
-            }
-            else if(address.equalsIgnoreCase("local") || address.equalsIgnoreCase("argument")){
-                transUtil.saveOffsetAddrToTemp((address.equalsIgnoreCase("local") ? "LCL" : "ARG"), offset, "R13");
-                transUtil.pop();
-                transUtil.writeDToMViaPointer("R13");
-            }
+            transUtil.pop(addressMap.get(address).get(), offset);
         }
     }
 
     private void writeArithmetic(String op) {
-        Map<String, String> booleanMap = Map.of(
-                "eq", "D;JEQ",
-                "lt", "D;JLT",
-                "gt", "D;JGT"
-        );
-
         if(op.equals("eq") || op.equals("gt") || op.equals("lt")){
             transUtil.binaryOp("sub");
             transUtil.pop();
@@ -131,7 +101,8 @@ public class CodeWriter {
 
             for(var f : files) {
                 this.parser = new Parser(f);
-                filename = f.getFileName().toString();
+                String filenameWE = f.getFileName().toString();
+                filename = filenameWE.substring(0, filenameWE.lastIndexOf("."));
                 while(parser.hasMoreCommands()) {
                     parser.advance();
                     CType ct = parser.commandType();

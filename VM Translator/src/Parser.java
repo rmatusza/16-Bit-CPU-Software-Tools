@@ -40,16 +40,20 @@ public class Parser {
         return currCom.size() == 1 ? currCom.get(0) : currCom.get(1);
     }
 
-    public int argTwo() {
-        String arg2Str = currCom.get(2);
-        int arg2;
-        try{
-            arg2 = Integer.parseInt(arg2Str);
-        }
-        catch (NumberFormatException e) {
-            throw new RuntimeException("invalid first argument :" + arg2Str + ": on line " + lineNum);
-        }
-        return arg2;
+//    public int argTwo() {
+//        String arg2Str = currCom.get(2);
+//        int arg2;
+//        try{
+//            arg2 = Integer.parseInt(arg2Str);
+//        }
+//        catch (NumberFormatException e) {
+//            throw new RuntimeException("invalid first argument :" + arg2Str + ": on line " + lineNum);
+//        }
+//        return arg2;
+//    }
+
+    public String argTwo() {
+        return currCom.get(2);
     }
 
     public boolean hasArgTwo(){

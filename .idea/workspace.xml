@@ -5,8 +5,23 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c5c4c39d-dca2-4362-99dc-2c12daf8a96d" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/VM Translator/testAlt/BasicTest/BasicTest.asm" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/VM Translator/testAlt/BasicTest/BasicTest.vm" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/VM Translator/testAlt/PointerTest/PointerTest.asm" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/VM Translator/testAlt/PointerTest/PointerTest.vm" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/VM Translator/testAlt/SimpleAdd/SimpleAdd.asm" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/VM Translator/testAlt/SimpleAdd/SimpleAdd.vm" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/VM Translator/testAlt/StackTest/StackTest.asm" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/VM Translator/testAlt/StackTest/StackTest.vm" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/VM Translator/testAlt/StaticTest/StaticTest.asm" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/VM Translator/testAlt/StaticTest/StaticTest.vm" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/VM Translator/src/CodeWriter.java" beforeDir="false" afterPath="$PROJECT_DIR$/VM Translator/src/CodeWriter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/VM Translator/src/Parser.java" beforeDir="false" afterPath="$PROJECT_DIR$/VM Translator/src/Parser.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/VM Translator/src/util/TranslatorUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/VM Translator/src/util/TranslatorUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/VM Translator/CodeWriter.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/VM Translator/CodeWriter.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/VM Translator/Parser.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/VM Translator/Parser.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/VM Translator/util/TranslatorUtil.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/VM Translator/util/TranslatorUtil.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

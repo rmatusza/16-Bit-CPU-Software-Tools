@@ -25,7 +25,7 @@ public class TranslatorUtil {
         id++;
     }
 
-    public void saveOffsetAddrToTemp(String address, int offset, String temp) {
+    public void saveOffsetAddressToTemp(String address, String offset, String temp) {
         sb.append("@").append(address).append(" ")
                 .append("D=M ")
                 .append("@").append(offset).append(" ")
@@ -39,8 +39,8 @@ public class TranslatorUtil {
                 .append("M=D ");
     }
 
-    public void writeDToMViaPointer(String address) {
-        sb.append("@").append(address).append(" ")
+    public void writeDToMViaPointer(String addressPointer) {
+        sb.append("@").append(addressPointer).append(" ")
                 .append("A=M ")
                 .append("M=D ");
     }
@@ -48,6 +48,18 @@ public class TranslatorUtil {
     public void incrementSP() {
         sb.append("@SP ")
                 .append("M=M+1 ");
+    }
+
+    public void pop(String address, String offset){
+        if(offset.isEmpty()){
+            pop();
+            writeDToM(address);
+        }
+        else{
+            saveOffsetAddressToTemp(address, offset, "R13");
+            pop();
+            writeDToMViaPointer("R13");
+        }
     }
 
     public void pop() {
@@ -63,36 +75,24 @@ public class TranslatorUtil {
                 .append("A=M ");
     }
 
-    public void push(int address, int offset, boolean hasOffset) {
-        if (!hasOffset) {
+    public void push(String address, String offset){
+        if(Character.isDigit(address.charAt(0))) {
             sb.append("@").append(address).append(" ")
                     .append("D=A ")
                     .append("@SP ")
                     .append("A=M ")
                     .append("M=D ");
             incrementSP();
-        } else {
+        }
+        else if(offset.isEmpty()){
             sb.append("@").append(address).append(" ")
-                    .append("D=M ")
-                    .append("@").append(offset).append(" ")
-                    .append("A=D+A ")
                     .append("D=M ")
                     .append("@SP ")
                     .append("A=M ")
                     .append("M=D ");
             incrementSP();
         }
-    }
-
-    public void push(String address, int offset, boolean hasOffset) {
-        if (!hasOffset) {
-            sb.append("@").append(address).append(" ")
-                    .append("D=M ")
-                    .append("@SP ")
-                    .append("A=M ")
-                    .append("M=D ");
-            incrementSP();
-        } else {
+        else {
             sb.append("@").append(address).append(" ")
                     .append("D=M ")
                     .append("@").append(offset).append(" ")
