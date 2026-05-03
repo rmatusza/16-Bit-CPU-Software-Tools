@@ -5,22 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c5c4c39d-dca2-4362-99dc-2c12daf8a96d" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/VM Translator/testAlt/BasicTest/BasicTest.asm" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/VM Translator/testAlt/BasicTest/BasicTest.vm" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/VM Translator/testAlt/PointerTest/PointerTest.asm" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/VM Translator/testAlt/PointerTest/PointerTest.vm" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/VM Translator/testAlt/SimpleAdd/SimpleAdd.asm" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/VM Translator/testAlt/SimpleAdd/SimpleAdd.vm" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/VM Translator/testAlt/StackTest/StackTest.asm" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/VM Translator/testAlt/StackTest/StackTest.vm" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/VM Translator/testAlt/StaticTest/StaticTest.asm" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/VM Translator/testAlt/StaticTest/StaticTest.vm" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assembler/src/Assembler.java" beforeDir="false" afterPath="$PROJECT_DIR$/Assembler/src/Assembler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assembler/src/Parser.java" beforeDir="false" afterPath="$PROJECT_DIR$/Assembler/src/Parser.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/VM Translator/src/CodeWriter.java" beforeDir="false" afterPath="$PROJECT_DIR$/VM Translator/src/CodeWriter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/VM Translator/src/Parser.java" beforeDir="false" afterPath="$PROJECT_DIR$/VM Translator/src/Parser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/VM Translator/src/Translator.java" beforeDir="false" afterPath="$PROJECT_DIR$/VM Translator/src/Translator.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/VM Translator/src/util/TranslatorUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/VM Translator/src/util/TranslatorUtil.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/VM Translator/CodeWriter.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/VM Translator/CodeWriter.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/VM Translator/Parser.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/VM Translator/Parser.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/VM Translator/Translator.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/VM Translator/Translator.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/VM Translator/util/TranslatorUtil.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/VM Translator/util/TranslatorUtil.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -36,25 +27,39 @@
   &quot;associatedIndex&quot;: 2
 }</component>
   <component name="ProjectId" id="3DB3Yf3WB4CGpjVTHWlHJMf301q" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="1" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "Application.Assembler.executor": "Run",
     "Application.VM Translator.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "refactor",
+    "git-widget-placeholder": "master",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/Ryan/Desktop/Code/Projects/ECS/VM Translator/testAlt"
+    "last_opened_file_path": "C:/Users/Ryan/Desktop/Code/Projects/ECS/Assembler/test"
   }
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\Ryan\Desktop\Code\Projects\ECS\Assembler\test" />
       <recent name="C:\Users\Ryan\Desktop\Code\Projects\ECS\VM Translator\testAlt" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Application.VM Translator">
+    <configuration name="Assembler" type="Application" factoryName="Application">
+      <option name="ALTERNATIVE_JRE_PATH" value="17" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+      <option name="MAIN_CLASS_NAME" value="Assembler" />
+      <module name="Assembler" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="VM Translator" type="Application" factoryName="Application">
       <option name="ALTERNATIVE_JRE_PATH" value="17" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
@@ -64,6 +69,10 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <list>
+      <item itemvalue="Application.VM Translator" />
+      <item itemvalue="Application.Assembler" />
+    </list>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">

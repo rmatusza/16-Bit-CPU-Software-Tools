@@ -105,8 +105,8 @@ public class TranslatorUtil {
         }
     }
 
-    public void binaryOp(String op) {
-        String symbol = operations.get(op);
+    public void binaryOp(String operation) {
+        String symbol = operations.get(operation);
 
         pop();
         popForOp();

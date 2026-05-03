@@ -61,6 +61,7 @@ public class Parser {
         Map.entry("M+1", "1110111"),
         Map.entry("M-1", "1110010"),
         Map.entry("D+M", "1000010"),
+        Map.entry("M+D", "1000010"),
         Map.entry("D-M", "1010011"),
         Map.entry("M-D", "1000111"),
         Map.entry("D&M", "1000000"),

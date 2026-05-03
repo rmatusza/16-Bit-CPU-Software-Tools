@@ -8,7 +8,7 @@ public class Assembler {
 //        catch (Exception e){
 //            new Code(args[0], false);
 //        }
-        new Code("Assembler/test/Pong.asm", false);
+        new Code("Assembler/test/Multiply.asm", false);
 //        new Code("test/pong.asm", false);
 //        new Code("C:\\Program Files\\nand2tetris\\projects\\6\\rect\\Rect.asm", false);
     }

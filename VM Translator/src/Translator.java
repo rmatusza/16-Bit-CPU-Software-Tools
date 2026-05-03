@@ -14,6 +14,5 @@ public class Translator {
         for(var p : paths){
             new CodeWriter("VM Translator/test/"+p);
         }
-//        new CodeWriter("VM Translator/test/StackTest");
     }
 }
