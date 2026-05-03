@@ -1,9 +1,13 @@
 package util;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class TranslatorUtil {
+    private final StringBuilder sb = new StringBuilder();
+    private int id = 0;
     private final Map<String, String> operations = new HashMap<>(Map.of(
             "add", "+",
             "sub", "-",
@@ -13,125 +17,145 @@ public class TranslatorUtil {
             "neg", "-"
     ));
 
-    public String saveOffsetAddrToTemp(String address, int offset, String temp){
-        return
-                "@"+address+" "+
-                "D=M "+
-                "@"+offset+" "+
-                "D=D+A "+
-                "@"+temp+" "+
-                "M=D ";
+    public List<String> getInstructions() {
+        return new ArrayList<>(List.of(sb.toString().stripTrailing().split(" ")));
     }
 
-    public String writeDToM(String address){
-        return
-                "@"+address+" "+
-                "M=D ";
+    public void incrementSymbolId(){
+        id++;
     }
 
-    public String writeDToMViaPointer(String address){
-        return
-                "@"+address+" "+
-                "A=M "+
-                "M=D ";
+    public void saveOffsetAddrToTemp(String address, int offset, String temp) {
+        sb.append("@").append(address).append(" ")
+                .append("D=M ")
+                .append("@").append(offset).append(" ")
+                .append("D=D+A ")
+                .append("@").append(temp).append(" ")
+                .append("M=D ");
     }
 
-    public String push(int address, int offset, boolean hasOffset){
-        if(!hasOffset){
-            return
-                    "@"+address+" "+
-                    "D=A "+
-                    "@SP "+
-                    "A=M "+
-                    "M=D "+
-                    incrementSP();
-        }
-        else{
-            return
-                    "@"+address+" "+
-                    "D=M "+
-                    "@"+offset+" "+
-                    "A=D+A "+
-                    "D=M "+
-                    "@SP "+
-                    "A=M "+
-                    "M=D "+
-                    incrementSP();
-        }
+    public void writeDToM(String address) {
+        sb.append("@").append(address).append(" ")
+                .append("M=D ");
     }
 
-    public String push(String address, int offset, boolean hasOffset){
-        if(!hasOffset){
-            return
-                    "@"+address+" "+
-                    "D=M "+
-                    "@SP "+
-                    "A=M "+
-                    "M=D "+
-                    incrementSP();
-        }
-        else{
-            return
-                    "@"+address+" "+
-                    "D=M "+
-                    "@"+offset+" "+
-                    "A=D+A "+
-                    "D=M "+
-                    "@SP "+
-                    "A=M "+
-                    "M=D "+
-                    incrementSP();
+    public void writeDToMViaPointer(String address) {
+        sb.append("@").append(address).append(" ")
+                .append("A=M ")
+                .append("M=D ");
+    }
+
+    public void incrementSP() {
+        sb.append("@SP ")
+                .append("M=M+1 ");
+    }
+
+    public void pop() {
+        sb.append("@SP ")
+                .append("M=M-1 ")
+                .append("A=M ")
+                .append("D=M ");
+    }
+
+    public void popForOp() {
+        sb.append("@SP ")
+                .append("M=M-1 ")
+                .append("A=M ");
+    }
+
+    public void push(int address, int offset, boolean hasOffset) {
+        if (!hasOffset) {
+            sb.append("@").append(address).append(" ")
+                    .append("D=A ")
+                    .append("@SP ")
+                    .append("A=M ")
+                    .append("M=D ");
+            incrementSP();
+        } else {
+            sb.append("@").append(address).append(" ")
+                    .append("D=M ")
+                    .append("@").append(offset).append(" ")
+                    .append("A=D+A ")
+                    .append("D=M ")
+                    .append("@SP ")
+                    .append("A=M ")
+                    .append("M=D ");
+            incrementSP();
         }
     }
 
-    public String incrementSP() {
-        return
-                "@SP "+
-                "M=M+1 ";
+    public void push(String address, int offset, boolean hasOffset) {
+        if (!hasOffset) {
+            sb.append("@").append(address).append(" ")
+                    .append("D=M ")
+                    .append("@SP ")
+                    .append("A=M ")
+                    .append("M=D ");
+            incrementSP();
+        } else {
+            sb.append("@").append(address).append(" ")
+                    .append("D=M ")
+                    .append("@").append(offset).append(" ")
+                    .append("A=D+A ")
+                    .append("D=M ")
+                    .append("@SP ")
+                    .append("A=M ")
+                    .append("M=D ");
+            incrementSP();
+        }
     }
 
-    public String pop(){
-        return
-                "@SP " +
-                "M=M-1 " +
-                "A=M " +
-                "D=M ";
-    }
-
-    public String popForOp(){
-        return
-                "@SP "+
-                "M=M-1 "+
-                "A=M ";
-    }
-
-    public String binaryOp(String op){
+    public void binaryOp(String op) {
         String symbol = operations.get(op);
-        return pop() + popForOp() + "M=M"+symbol+"D " + incrementSP();
+
+        pop();
+        popForOp();
+        sb.append("M=M").append(symbol).append("D ");
+        incrementSP();
     }
 
-   public String unaryOp(String op){
+    public void unaryOp(String op) {
         String symbol = operations.get(op);
-        return pop() + "M="+symbol+"D " + incrementSP();
-   }
 
-   public String writeTrueFlag(int id){
-        return
-                "(true_"+id+") "+
-                "@1 "+
-                "D=A "+
-                "@SP "+
-                "A=M "+
-                "M=-D "+
-                incrementSP();
-   }
+        pop();
+        sb.append("M=").append(symbol).append("D ");
+        incrementSP();
+    }
 
-   public String writeFalseFlag(int id){
-        return
-                "(false_"+id+") "+
-                "@SP "+
-                "A=M "+
-                "M=0 "+
-                incrementSP();
-   }
+    public void writeIsTrueHandler() {
+        sb.append("(true_").append(id).append(") ")
+                .append("@1 ")
+                .append("D=A ")
+                .append("@SP ")
+                .append("A=M ")
+                .append("M=-D ");
+        incrementSP();
+    }
+
+    public void writeIsFalseHandler() {
+        sb.append("(false_").append(id).append(") ")
+                .append("@SP ")
+                .append("A=M ")
+                .append("M=0 ");
+        incrementSP();
+    }
+
+    public void writeIsContinueHandler(){
+        sb.append("(continue_").append(id).append(") ");
+    }
+
+    public void writeIsTrueCondition(String operation){
+        sb.append("@true_").append(id).append(" ")
+                .append(operation).append(" ");
+    }
+
+    public void writeIsFalseCondition(){
+        sb.append("@false_").append(id).append(" ")
+                .append("0;JMP").append(" ");
+    }
+
+    public void writeIsContinueCondition(){
+        sb.append("@continue_").append(id).append(" ")
+                .append("0;JMP").append(" ");
+    }
 }
