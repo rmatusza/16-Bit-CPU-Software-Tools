@@ -7,7 +7,6 @@ import java.util.*;
 
 import static util.ParserUtil.*;
 
-// TODO: update the format method to be similar to the one in the assembler with syntax checks and an "instruction-to-line number" map for better error messages
 public class Parser {
     private List<String> lines;
     private int index = 0;
@@ -15,7 +14,6 @@ public class Parser {
     private String filename;
     private List<String> currCom = new ArrayList<>();
     private final Map<Integer, Integer> lineTracker = new HashMap<>();
-    private final Set<String> allComs = new HashSet<>();
 
     public boolean hasMoreCommands() {
         return index < lines.size();
@@ -92,7 +90,6 @@ public class Parser {
     }
 
     private void validateSyntax() {
-        allComs.addAll(comsMap.keySet());
         for(int i=0; i<lines.size(); i++) {
             index = i;
             String l = lines.get(i);

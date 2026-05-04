@@ -56,6 +56,8 @@ public class ParserUtil {
     // maps command name to required argument count
     public static final Map<String, Integer> comsMap = new HashMap<>();
 
+    public static final Set<String> allComs = new HashSet<>();
+
     static
     {
         arithCom.forEach(c -> comsMap.put(
@@ -70,5 +72,7 @@ public class ParserUtil {
         memCom.forEach(c -> comsMap.put(
                 c, 3
         ));
+
+        allComs.addAll(comsMap.keySet());
     }
 }
