@@ -1,3 +1,5 @@
+package util;
+
 public enum CType {
     C_ARITHMETIC,
     C_PUSH,

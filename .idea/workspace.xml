@@ -6,11 +6,12 @@
   <component name="ChangeListManager">
     <list default="true" id="c5c4c39d-dca2-4362-99dc-2c12daf8a96d" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assembler/src/Assembler.java" beforeDir="false" afterPath="$PROJECT_DIR$/Assembler/src/Assembler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assembler/src/Parser.java" beforeDir="false" afterPath="$PROJECT_DIR$/Assembler/src/Parser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/VM Translator/src/CType.java" beforeDir="false" afterPath="$PROJECT_DIR$/VM Translator/src/util/CType.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/VM Translator/src/CodeWriter.java" beforeDir="false" afterPath="$PROJECT_DIR$/VM Translator/src/CodeWriter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/VM Translator/src/Translator.java" beforeDir="false" afterPath="$PROJECT_DIR$/VM Translator/src/Translator.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/VM Translator/src/util/TranslatorUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/VM Translator/src/util/TranslatorUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/VM Translator/src/Parser.java" beforeDir="false" afterPath="$PROJECT_DIR$/VM Translator/src/Parser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/VM Translator/test/BasicTest/BasicTest.vm" beforeDir="false" afterPath="$PROJECT_DIR$/VM Translator/test/BasicTest/BasicTest.vm" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/VM Translator/CodeWriter.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/VM Translator/CodeWriter.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/VM Translator/Parser.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/VM Translator/Parser.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/VM Translator/Translator.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/VM Translator/Translator.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/VM Translator/util/TranslatorUtil.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/VM Translator/util/TranslatorUtil.class" afterDir="false" />
     </list>
@@ -18,6 +19,13 @@
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -33,17 +41,17 @@
   <component name="ProjectViewState">
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.Assembler.executor": "Run",
-    "Application.VM Translator.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "master",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/Ryan/Desktop/Code/Projects/ECS/Assembler/test"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.Assembler.executor&quot;: &quot;Run&quot;,
+    &quot;Application.VM Translator.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;refactor&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/Ryan/Desktop/Code/Projects/ECS/Assembler/test&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\Ryan\Desktop\Code\Projects\ECS\Assembler\test" />

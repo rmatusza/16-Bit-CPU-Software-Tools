@@ -1,3 +1,4 @@
+import util.CType;
 import util.TranslatorUtil;
 
 import java.io.IOException;
@@ -14,6 +15,7 @@ public class CodeWriter {
     private Parser parser;
     private String filename;
     private String modifier;
+    private Path out;
     private final TranslatorUtil transUtil= new TranslatorUtil();
     private final Set<String> hasOffsetAddress = new HashSet<>(Set.of("local", "argument", "this", "that"));
     private final Map<String, String> booleanMap = Map.of(
@@ -74,49 +76,57 @@ public class CodeWriter {
         }
     }
 
+    private List<Path> initializeOutputPaths(String path) throws IOException {
+        List<Path> files = new ArrayList<>();
+        Path p = Paths.get(path);
+
+        if(Files.isDirectory(p)) {
+            Path file = Path.of(p.getFileName() + ".asm");
+            out = p.resolve(file);
+            try (Stream<Path> paths = Files.list(p)) {
+                paths.forEach(pat -> {
+                    String filename = pat.getFileName().toString();
+                    if(filename.substring(filename.lastIndexOf(".")+1).equals("vm")) files.add(pat);
+                });
+            }
+        }
+        else{
+            String filenameWE = p.getFileName().toString();
+            String filename = filenameWE.substring(0, filenameWE.indexOf("."));
+
+            out = p.getParent().resolve(filename+".asm");
+
+            if(filenameWE.substring(filenameWE.lastIndexOf(".")+1).equals("vm")) files.add(p);
+        }
+        return files;
+    }
+
+    private void writeAssembly(List<Path> files){
+        for(var f : files) {
+            String filenameWE = f.getFileName().toString();
+            filename = filenameWE.substring(0, filenameWE.lastIndexOf("."));
+            this.parser = new Parser(f, filename);
+            while(parser.hasMoreCommands()) {
+                parser.advance();
+                CType ct = parser.commandType();
+                if(ct.equals(CType.C_PUSH) || ct.equals(CType.C_POP)) writePushPop(ct);
+                else if(ct.equals(CType.C_ARITHMETIC)) writeArithmetic(parser.argOne());
+            }
+        }
+    }
+
+    private void writeOutput() throws IOException {
+        Files.write(out, transUtil.getInstructions(), StandardCharsets.UTF_8, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+    }
+
     public CodeWriter(String path) {
         try{
-            List<Path> files = new ArrayList<>();
-            Path p = Paths.get(path);
-            Path out;
-
-            if(Files.isDirectory(p)) {
-                Path file = Path.of(p.getFileName() + ".asm");
-                out = p.resolve(file);
-                try (Stream<Path> paths = Files.list(p)) {
-                    paths.forEach(pat -> {
-                        String filename = pat.getFileName().toString();
-                        if(filename.substring(filename.lastIndexOf(".")+1).equals("vm")) files.add(pat);
-                    });
-                }
-            }
-            else{
-                String filenameWE = p.getFileName().toString();
-                String filename = filenameWE.substring(0, filenameWE.indexOf("."));
-
-                out = p.getParent().resolve(filename+".asm");
-
-                if(filenameWE.substring(filenameWE.lastIndexOf(".")+1).equals("vm")) files.add(p);
-            }
-
-            for(var f : files) {
-                this.parser = new Parser(f);
-                String filenameWE = f.getFileName().toString();
-                filename = filenameWE.substring(0, filenameWE.lastIndexOf("."));
-                while(parser.hasMoreCommands()) {
-                    parser.advance();
-                    CType ct = parser.commandType();
-                    if(ct.equals(CType.C_PUSH) || ct.equals(CType.C_POP)) writePushPop(ct);
-                    else if(ct.equals(CType.C_ARITHMETIC)) writeArithmetic(parser.argOne());
-                }
-            }
-
-            Files.write(out, transUtil.getInstructions(), StandardCharsets.UTF_8, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+            List<Path> files = initializeOutputPaths(path);
+            writeAssembly(files);
+            writeOutput();
         }
         catch(RuntimeException | IOException e) {
             System.out.printf("\u001B[31m%s\u001B[0m", e);
         }
     }
 }
-
-
