@@ -16,6 +16,7 @@ public class CodeWriter {
     private String filename;
     private String modifier;
     private Path out;
+    private final List<Path> files = new ArrayList<>();
     private final TranslatorUtil transUtil= new TranslatorUtil();
     private final Set<String> hasOffsetAddress = new HashSet<>(Set.of("local", "argument", "this", "that"));
     private final Map<String, String> booleanMap = Map.of(
@@ -76,8 +77,7 @@ public class CodeWriter {
         }
     }
 
-    private List<Path> initializeOutputPaths(String path) throws IOException {
-        List<Path> files = new ArrayList<>();
+    private void initialize(String path) throws IOException {
         Path p = Paths.get(path);
 
         if(Files.isDirectory(p)) {
@@ -98,10 +98,9 @@ public class CodeWriter {
 
             if(filenameWE.substring(filenameWE.lastIndexOf(".")+1).equals("vm")) files.add(p);
         }
-        return files;
     }
 
-    private void writeAssembly(List<Path> files){
+    private void translate(){
         for(var f : files) {
             String filenameWE = f.getFileName().toString();
             filename = filenameWE.substring(0, filenameWE.lastIndexOf("."));
@@ -121,8 +120,8 @@ public class CodeWriter {
 
     public CodeWriter(String path) {
         try{
-            List<Path> files = initializeOutputPaths(path);
-            writeAssembly(files);
+            initialize(path);
+            translate();
             writeOutput();
         }
         catch(RuntimeException | IOException e) {
