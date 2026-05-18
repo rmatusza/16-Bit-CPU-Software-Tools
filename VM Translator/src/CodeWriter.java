@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -17,6 +18,7 @@ public class CodeWriter {
     private String currFunction;
     private String modifier;
     private Path out;
+    private boolean enforceSys;
     private final List<Path> files = new ArrayList<>();
     private final TranslatorUtil transUtil= new TranslatorUtil();
     private final Set<String> hasOffsetAddress = new HashSet<>(Set.of("local", "argument", "this", "that"));
@@ -79,15 +81,15 @@ public class CodeWriter {
     }
 
     private void writeLabel(String label) {
-        transUtil.writeLabel(filename, label);
+        transUtil.writeLabel(currFunction, label);
     }
 
     private void writeGoto(String label) {
-        transUtil.writeGoto(filename, label);
+        transUtil.writeGoto(currFunction, label);
     }
 
     private void writeIf(String label) {
-       transUtil.writeIf(filename, label);
+       transUtil.writeIf(currFunction, label);
     }
 
     private void writeCall(String functionName, int numArgs) {
@@ -114,21 +116,48 @@ public class CodeWriter {
 
     private void writeFunction(String functionName, int numLocals) {
         this.currFunction = functionName;
-        writeLabel(functionName);
+        transUtil.writeLabel(functionName);
         transUtil.initializeLocals(numLocals);
+    }
+
+    private boolean hasSysFile() {
+        return getFilename(files.get(0)).equalsIgnoreCase("sys");
+    }
+
+    private String getFilename(Path p) {
+        String filename = p.getFileName().toString();
+        return filename.substring(0, filename.lastIndexOf("."));
+    }
+
+    private String getFileExtension(Path p) {
+        String filename = p.getFileName().toString();
+        return filename.substring(filename.lastIndexOf(".")+1);
+    }
+
+    private void bootstrap(){
+        transUtil.initializeStackPointer();
+        transUtil.writeJumpToFunction("Sys.init");
     }
 
     private void initialize(String path) throws IOException {
         Path p = Paths.get(path);
-
         if(Files.isDirectory(p)) {
             Path file = Path.of(p.getFileName() + ".asm");
             out = p.resolve(file);
             try (Stream<Path> paths = Files.list(p)) {
                 paths.forEach(pat -> {
-                    String filename = pat.getFileName().toString();
-                    if(filename.substring(filename.lastIndexOf(".")+1).equals("vm")) files.add(pat);
+                    if(getFileExtension(pat).equals("vm")){
+                        if (getFilename(pat).equalsIgnoreCase("sys")){
+                            files.add(0, pat);
+                        }
+                        else {
+                            files.add(pat);
+                        }
+                    }
                 });
+            }
+            if (enforceSys && !hasSysFile()){
+                throw new RuntimeException("Sys.vm file was not provided\nEither include a Sys.vm file, or disable enforcement by adding \"false\" as an argument to the jar execution command");
             }
         }
         else{
@@ -143,8 +172,7 @@ public class CodeWriter {
 
     private void translate(){
         for(var f : files) {
-            String filenameWE = f.getFileName().toString();
-            filename = filenameWE.substring(0, filenameWE.lastIndexOf("."));
+            this.filename = getFilename(f);
             this.parser = new Parser(f, filename);
             while(parser.hasMoreCommands()) {
                 parser.advance();
@@ -167,9 +195,11 @@ public class CodeWriter {
         Files.write(out, transUtil.getInstructions(), StandardCharsets.UTF_8, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
     }
 
-    public CodeWriter(String path) {
+    public CodeWriter(String path, boolean enforceSys) {
+        this.enforceSys = enforceSys;
         try{
             initialize(path);
+            bootstrap();
             translate();
             writeOutput();
         }

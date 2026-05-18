@@ -11,8 +11,18 @@ public class Translator {
                 "StaticTest"
         );
 
+        boolean ENFORCE_SYS;
+
+        try{
+            ENFORCE_SYS = Boolean.parseBoolean(args[0]);
+        }
+        catch (RuntimeException e) {
+            ENFORCE_SYS = true;
+        }
+
+
         for(var p : paths){
-            new CodeWriter("VM Translator/test/"+p);
+            new CodeWriter("VM Translator/test/"+p, ENFORCE_SYS);
         }
     }
 }

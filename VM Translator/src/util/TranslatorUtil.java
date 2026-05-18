@@ -18,6 +18,13 @@ public class TranslatorUtil {
             "neg", "-"
     ));
 
+    public void initializeStackPointer() {
+       sb.append("@256 ")
+               .append("D=A ")
+               .append("@SP ")
+               .append("M=D ");
+    }
+
     public List<String> getInstructions() {
         return new ArrayList<>(List.of(sb.toString().stripTrailing().split(" ")));
     }
