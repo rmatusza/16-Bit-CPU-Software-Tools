@@ -25,6 +25,7 @@ public class Parser {
         "AMD", "111"
     );
 
+    /// all comparisons are made to 0 i.e. JNE means to jump if the provided value is not equal to 0
     private final Map<String, String> jumpMappings = Map.of(
         "null", "000",
         "JGT", "001",

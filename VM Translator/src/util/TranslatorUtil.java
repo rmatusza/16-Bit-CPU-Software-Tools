@@ -8,6 +8,7 @@ import java.util.Map;
 public class TranslatorUtil {
     private final StringBuilder sb = new StringBuilder();
     private int id = 0;
+    private final Map<String, String> functionNames = new HashMap<>();
     private final Map<String, String> operations = new HashMap<>(Map.of(
             "add", "+",
             "sub", "-",
@@ -107,7 +108,7 @@ public class TranslatorUtil {
 
     public void binaryOp(String operation) {
         String symbol = operations.get(operation);
-
+        // (sp-2) operation (sp-1) >> if stack is 5, 2 with 2 being the top then sub command would be 5 - 2
         pop();
         popForOp();
         sb.append("M=M").append(symbol).append("D ");
@@ -157,5 +158,88 @@ public class TranslatorUtil {
     public void writeIsContinueCondition(){
         sb.append("@continue_").append(id).append(" ")
                 .append("0;JMP").append(" ");
+    }
+
+    // PROGRAM CONTROL
+
+    private void writeLabelRef(String name, String label){
+        sb.append("@").append(name).append(".").append(label).append(" ");
+    }
+
+    public void writeLabel(String filename, String label){
+        sb.append("(").append(filename).append(".").append(label).append(") ");
+    }
+
+    public StringBuilder generateReturnAddress(String name) {
+        StringBuilder b = new StringBuilder();
+        b.append(name).append("_").append("RETURN").append(" ");
+        return b;
+    }
+
+    public void pushReturnAddress(String returnAddr) {
+        push(returnAddr, "");
+    }
+
+    public StringBuilder writeReturnAddressReference(String name) {
+        StringBuilder b = new StringBuilder();
+        b.append("@").append(name).append("_").append("RETURN").append("_").append(id).append(" ");
+        sb.append(b);
+
+        return new StringBuilder(b.substring(1, b.length()));
+    }
+
+    public void writeReturnAddressLabel(StringBuilder returnAddr){
+        returnAddr.insert(0, "(", 0, 1);
+        returnAddr.insert(returnAddr.length(), ")", 0, 1);
+
+        sb.append(returnAddr).append(" ");
+    }
+
+    public void writeGoto(String filename, String label){
+        writeLabelRef(filename, label);
+        sb.append("0;JMP ");
+    }
+
+    public void writeJumpToFunction(String functionName) {
+        sb.append("@").append(functionName).append(" ").append("0;JMP ");
+    }
+
+    public void writeIf(String filename, String label){
+        pop();
+        writeLabelRef(filename, label);
+        sb.append("D;JNE ");
+    }
+
+    public void pushCallerPointers() {
+        push("LCL", "");
+        push("ARG", "");
+        push("THIS", "");
+        push("THAT", "");
+    }
+
+    public void repositionCalleeArg(int numArgs) {
+        push("SP", "");
+        push(numArgs+"", "");
+        binaryOp("sub");
+        push("5", "");
+        binaryOp("sub");
+        pop("ARG", "");
+    }
+
+    public void repositionCalleeLcl(){
+        push("SP", "");
+        pop("LCL", "");
+    }
+
+    public void setFrameVar() {
+       push("LCL", "");
+       pop("FRAME", "");
+    }
+
+    public void setReturnAddrVar(){
+        push("FRAME", "");
+        push("5", "");
+        binaryOp("sub");
+        pop("RET", "");
     }
 }

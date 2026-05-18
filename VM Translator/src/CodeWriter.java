@@ -14,6 +14,8 @@ import java.util.stream.Stream;
 public class CodeWriter {
     private Parser parser;
     private String filename;
+    private String caller;
+    private int id;
     private String modifier;
     private Path out;
     private final List<Path> files = new ArrayList<>();
@@ -75,6 +77,36 @@ public class CodeWriter {
         else if(op.equals("add") || op.equals("sub") || op.equals("and") || op.equals("or")){
            transUtil.binaryOp(op);
         }
+    }
+
+    private void writeLabel(String label) {
+        transUtil.writeLabel(filename, label);
+    }
+
+    private void writeGoto(String label) {
+        transUtil.writeGoto(filename, label);
+    }
+
+    private void writeIf(String label) {
+       transUtil.writeIf(filename, label);
+    }
+
+    private void writeCall(String functionName, int numArgs) {
+        StringBuilder returnAddr = transUtil.generateReturnAddress(functionName);
+        transUtil.pushReturnAddress(returnAddr.toString());
+        transUtil.pushCallerPointers();
+        transUtil.repositionCalleeArg(numArgs);
+        transUtil.repositionCalleeLcl();
+        transUtil.writeJumpToFunction(functionName);
+        transUtil.writeReturnAddressLabel(returnAddr);
+    }
+
+    private void writeReturn() {
+
+    }
+
+    private void writeFunction(String functionName, int numLocals) {
+
     }
 
     private void initialize(String path) throws IOException {
