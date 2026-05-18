@@ -170,7 +170,15 @@ public class TranslatorUtil {
         sb.append("(").append(filename).append(".").append(label).append(") ");
     }
 
-    public StringBuilder generateReturnAddress(String name) {
+    private void writeLabelRef(String name){
+        sb.append("@").append(name).append(" ");
+    }
+
+    public void writeLabel(String name){
+        sb.append("(").append(name).append(") ");
+    }
+
+    public StringBuilder generateReturnAddressName(String name) {
         StringBuilder b = new StringBuilder();
         b.append(name).append("_").append("RETURN").append(" ");
         return b;
@@ -180,23 +188,13 @@ public class TranslatorUtil {
         push(returnAddr, "");
     }
 
-    public StringBuilder writeReturnAddressReference(String name) {
-        StringBuilder b = new StringBuilder();
-        b.append("@").append(name).append("_").append("RETURN").append("_").append(id).append(" ");
-        sb.append(b);
-
-        return new StringBuilder(b.substring(1, b.length()));
-    }
-
-    public void writeReturnAddressLabel(StringBuilder returnAddr){
-        returnAddr.insert(0, "(", 0, 1);
-        returnAddr.insert(returnAddr.length(), ")", 0, 1);
-
-        sb.append(returnAddr).append(" ");
-    }
-
     public void writeGoto(String filename, String label){
         writeLabelRef(filename, label);
+        sb.append("0;JMP ");
+    }
+
+    public void writeGoto(String filename){
+        writeLabelRef(filename);
         sb.append("0;JMP ");
     }
 
@@ -241,5 +239,42 @@ public class TranslatorUtil {
         push("5", "");
         binaryOp("sub");
         pop("RET", "");
+    }
+
+    public void setReturnValue(){
+        pop("ARG", "");
+    }
+
+    public void restoreCallerSP(){
+        push("ARG", "");
+        push("1", "");
+        binaryOp("add");
+        pop("SP", "");
+    }
+
+    public void restoreCallerPointers(){
+        push("FRAME", "");
+        push("1", "");
+        binaryOp("sub");
+        pop("THAT","");
+        push("FRAME", "");
+        push("2", "");
+        binaryOp("sub");
+        pop("THIS","");
+        push("FRAME", "");
+        push("3", "");
+        binaryOp("sub");
+        pop("ARG","");
+        push("FRAME", "");
+        push("4", "");
+        binaryOp("sub");
+        pop("LCL","");
+    }
+
+    public void initializeLocals(int numLocals){
+        for(int i=0; i<numLocals; i++){
+            push(i+"", "");
+            pop("LCL", i+"");
+        }
     }
 }

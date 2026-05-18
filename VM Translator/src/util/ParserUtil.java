@@ -10,7 +10,13 @@ public class ParserUtil {
     public static final Map<String, CType> cMap = Map.of(
             "push", CType.C_PUSH,
             "pop", CType.C_POP,
-            "math", CType.C_ARITHMETIC
+            "math", CType.C_ARITHMETIC,
+            "label", CType.C_LABEL,
+            "goto", CType.C_GOTO,
+            "if-goto", CType.C_IF,
+            "function", CType.C_FUNCTION,
+            "return", CType.C_RETURN,
+            "call", CType.C_CALL
     );
 
     public static final Set<String> memLocs = new HashSet<>(Set.of(

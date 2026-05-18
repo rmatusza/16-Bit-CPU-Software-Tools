@@ -14,8 +14,7 @@ import java.util.stream.Stream;
 public class CodeWriter {
     private Parser parser;
     private String filename;
-    private String caller;
-    private int id;
+    private String currFunction;
     private String modifier;
     private Path out;
     private final List<Path> files = new ArrayList<>();
@@ -92,21 +91,31 @@ public class CodeWriter {
     }
 
     private void writeCall(String functionName, int numArgs) {
-        StringBuilder returnAddr = transUtil.generateReturnAddress(functionName);
+        StringBuilder returnAddr = transUtil.generateReturnAddressName(functionName);
+
         transUtil.pushReturnAddress(returnAddr.toString());
         transUtil.pushCallerPointers();
         transUtil.repositionCalleeArg(numArgs);
         transUtil.repositionCalleeLcl();
         transUtil.writeJumpToFunction(functionName);
-        transUtil.writeReturnAddressLabel(returnAddr);
+        transUtil.writeLabel(returnAddr.toString());
     }
 
     private void writeReturn() {
+        StringBuilder returnAddr = transUtil.generateReturnAddressName(currFunction);
 
+        transUtil.setFrameVar();
+        transUtil.setReturnAddrVar();
+        transUtil.setReturnValue();
+        transUtil.restoreCallerSP();
+        transUtil.restoreCallerPointers();
+        transUtil.writeGoto(returnAddr.toString());
     }
 
     private void writeFunction(String functionName, int numLocals) {
-
+        this.currFunction = functionName;
+        writeLabel(functionName);
+        transUtil.initializeLocals(numLocals);
     }
 
     private void initialize(String path) throws IOException {
@@ -142,6 +151,14 @@ public class CodeWriter {
                 CType ct = parser.commandType();
                 if(ct.equals(CType.C_PUSH) || ct.equals(CType.C_POP)) writePushPop(ct);
                 else if(ct.equals(CType.C_ARITHMETIC)) writeArithmetic(parser.argOne());
+                else if(ct.equals(CType.C_LABEL)) writeLabel(parser.argOne());
+                else if(ct.equals(CType.C_GOTO)) writeGoto(parser.argOne());
+                else if(ct.equals(CType.C_IF)) writeIf(parser.argOne());
+                else if(ct.equals(CType.C_FUNCTION)) writeFunction(parser.argOne(), Integer.parseInt(parser.argTwo()));
+                else if(ct.equals(CType.C_RETURN)) writeReturn();
+                else if(ct.equals(CType.C_CALL)) writeCall(parser.argOne(), Integer.parseInt(parser.argTwo()));
+                else throw new RuntimeException("Command type \""+ct+"\" not recognized");
+
             }
         }
     }
