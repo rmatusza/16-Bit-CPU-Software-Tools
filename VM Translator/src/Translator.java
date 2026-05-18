@@ -3,12 +3,15 @@ import java.util.List;
 
 public class Translator {
     public static void main(String[] args) throws IOException {
+//        List<String> paths = List.of(
+//                "BasicTest",
+//                "PointerTest",
+//                "SimpleAdd",
+//                "StackTest",
+//                "StaticTest"
+//        );
         List<String> paths = List.of(
-                "BasicTest",
-                "PointerTest",
-                "SimpleAdd",
-                "StackTest",
-                "StaticTest"
+                "FibonacciElement"
         );
 
         boolean ENFORCE_SYS;

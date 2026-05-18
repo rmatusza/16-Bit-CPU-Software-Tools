@@ -187,7 +187,7 @@ public class TranslatorUtil {
 
     public StringBuilder generateReturnAddressName(String name) {
         StringBuilder b = new StringBuilder();
-        b.append(name).append("_").append("RETURN").append(" ");
+        b.append(name).append("_").append("RETURN");
         return b;
     }
 

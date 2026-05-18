@@ -9,6 +9,10 @@
       <change beforePath="$PROJECT_DIR$/VM Translator/src/CodeWriter.java" beforeDir="false" afterPath="$PROJECT_DIR$/VM Translator/src/CodeWriter.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/VM Translator/src/Translator.java" beforeDir="false" afterPath="$PROJECT_DIR$/VM Translator/src/Translator.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/VM Translator/src/util/TranslatorUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/VM Translator/src/util/TranslatorUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/VM Translator/CodeWriter.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/VM Translator/CodeWriter.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/VM Translator/Translator.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/VM Translator/Translator.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/VM Translator/util/ParserUtil.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/VM Translator/util/ParserUtil.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/VM Translator/util/TranslatorUtil.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/VM Translator/util/TranslatorUtil.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,11 +48,12 @@
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;vm-pt2&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/Ryan/Desktop/Code/Projects/ECS/Assembler/test&quot;
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/Ryan/Desktop/Code/Projects/ECS/VM Translator/test/FibonacciElement&quot;
   }
 }</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\Ryan\Desktop\Code\Projects\ECS\VM Translator\test\FibonacciElement" />
       <recent name="C:\Users\Ryan\Desktop\Code\Projects\ECS\Assembler\test" />
       <recent name="C:\Users\Ryan\Desktop\Code\Projects\ECS\VM Translator\testAlt" />
     </key>

@@ -94,7 +94,7 @@ public class CodeWriter {
 
     private void writeCall(String functionName, int numArgs) {
         StringBuilder returnAddr = transUtil.generateReturnAddressName(functionName);
-
+        System.out.println(returnAddr.toString() + "test");
         transUtil.pushReturnAddress(returnAddr.toString());
         transUtil.pushCallerPointers();
         transUtil.repositionCalleeArg(numArgs);
