@@ -113,6 +113,15 @@ public class TranslatorUtil {
         }
     }
 
+    public void pushLabel(String label){
+        sb.append("@").append(label).append(" ")
+                .append("D=A ")
+                .append("@SP ")
+                .append("A=M ")
+                .append("M=D ");
+        incrementSP();
+    }
+
     public void binaryOp(String operation) {
         String symbol = operations.get(operation);
         // (sp-2) operation (sp-1) >> if stack is 5, 2 with 2 being the top then sub command would be 5 - 2
@@ -167,6 +176,7 @@ public class TranslatorUtil {
                 .append("0;JMP").append(" ");
     }
 
+    /* TO-DO: don't use the stack to perform calculations >> update call and return parts that involve arithmetic */
     // PROGRAM CONTROL
 
     private void writeLabelRef(String name, String label){
@@ -187,22 +197,28 @@ public class TranslatorUtil {
 
     public StringBuilder generateReturnAddressName(String name) {
         StringBuilder b = new StringBuilder();
-        b.append(name).append("_").append("RETURN");
+        b.append(name).append("_").append("RETURN").append("_").append(id++);
         return b;
     }
 
     public void pushReturnAddress(String returnAddr) {
-        push(returnAddr, "");
+        pushLabel(returnAddr);
     }
 
-    public void writeGoto(String filename, String label){
-        writeLabelRef(filename, label);
+    public void writeGoto(String name, String label){
+        writeLabelRef(name, label);
         sb.append("0;JMP ");
     }
 
-    public void writeGoto(String filename){
-        writeLabelRef(filename);
+    public void writeGoto(String name){
+        writeLabelRef(name);
         sb.append("0;JMP ");
+    }
+
+    public void writeGotoVarAddress(String v) {
+        sb.append("@").append(v).append(" ")
+                .append("A=M ")
+                .append("0;JMP ");
     }
 
     public void writeJumpToFunction(String functionName) {
