@@ -122,6 +122,15 @@ public class TranslatorUtil {
         incrementSP();
     }
 
+    public void pushPointer(String pointer){
+        sb.append("@").append(pointer).append(" ")
+                .append("D=M ") // D = address that the pointer is pointing to
+                .append("@SP ")
+                .append("A=M ")
+                .append("M=D ");
+        incrementSP();
+    }
+
     public void binaryOp(String operation) {
         String symbol = operations.get(operation);
         // (sp-2) operation (sp-1) >> if stack is 5, 2 with 2 being the top then sub command would be 5 - 2
@@ -176,7 +185,6 @@ public class TranslatorUtil {
                 .append("0;JMP").append(" ");
     }
 
-    /* TO-DO: don't use the stack to perform calculations >> update call and return parts that involve arithmetic */
     // PROGRAM CONTROL
 
     private void writeLabelRef(String name, String label){
@@ -221,10 +229,6 @@ public class TranslatorUtil {
                 .append("0;JMP ");
     }
 
-    public void writeJumpToFunction(String functionName) {
-        sb.append("@").append(functionName).append(" ").append("0;JMP ");
-    }
-
     public void writeIf(String filename, String label){
         pop();
         writeLabelRef(filename, label);
@@ -232,66 +236,73 @@ public class TranslatorUtil {
     }
 
     public void pushCallerPointers() {
-        push("LCL", "");
-        push("ARG", "");
-        push("THIS", "");
-        push("THAT", "");
+        pushPointer("LCL");
+        pushPointer("ARG");
+        pushPointer("THIS");
+        pushPointer("THAT");
     }
 
     public void repositionCalleeArg(int numArgs) {
-        push("SP", "");
-        push(numArgs+"", "");
-        binaryOp("sub");
-        push("5", "");
-        binaryOp("sub");
-        pop("ARG", "");
+        int i = numArgs + 5;
+        sb.append("@SP ")
+                .append("D=M ")
+                .append("@").append(i).append(" ")
+                .append("D=D-A ")
+                .append("@ARG ")
+                .append("M=D ");
     }
 
     public void repositionCalleeLcl(){
-        push("SP", "");
-        pop("LCL", "");
+        sb.append("@SP ")
+                .append("D=M ")
+                .append("@LCL ")
+                .append("M=D ");
     }
 
     public void setFrameVar() {
-       push("LCL", "");
-       pop("FRAME", "");
+        sb.append("@LCL ")
+                .append("D=M ")
+                .append("@FRAME ")
+                .append("M=D ");
+    }
+
+    private void modifyPointerViaFrame(int i, String pointer) {
+        sb.append("@").append(i).append(" ")
+                .append("D=A ")
+                .append("@FRAME ")
+                .append("A=M-D ") // A = address that contains the pointer address
+                .append("D=M ") // D = pointer address
+                .append("@").append(pointer).append(" ")
+                .append("M=D ");
     }
 
     public void setReturnAddrVar(){
-        push("FRAME", "");
-        push("5", "");
-        binaryOp("sub");
-        pop("RET", "");
+        sb.append("@").append(5).append(" ")
+                .append("D=A ")
+                .append("@FRAME ")
+                .append("A=M-D ") // A = address that contains the return address
+                .append("D=M ") // D = return address
+                .append("@RET ")
+                .append("M=D ");
     }
 
     public void setReturnValue(){
-        pop("ARG", "");
+        pop();
+        writeDToMViaPointer("ARG");
     }
 
     public void restoreCallerSP(){
-        push("ARG", "");
-        push("1", "");
-        binaryOp("add");
-        pop("SP", "");
+        sb.append("@").append("ARG ")
+                .append("D=M+1 ")
+                .append("@SP ")
+                .append("M=D ");
     }
 
     public void restoreCallerPointers(){
-        push("FRAME", "");
-        push("1", "");
-        binaryOp("sub");
-        pop("THAT","");
-        push("FRAME", "");
-        push("2", "");
-        binaryOp("sub");
-        pop("THIS","");
-        push("FRAME", "");
-        push("3", "");
-        binaryOp("sub");
-        pop("ARG","");
-        push("FRAME", "");
-        push("4", "");
-        binaryOp("sub");
-        pop("LCL","");
+        List<String> pointers = List.of("THAT", "THIS", "ARG", "LCL");
+        for (int i = 0; i < 4; i++) {
+            modifyPointerViaFrame(i+1, pointers.get(i));
+        }
     }
 
     public void initializeLocals(int numLocals){

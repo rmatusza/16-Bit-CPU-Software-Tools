@@ -8,7 +8,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -18,7 +17,7 @@ public class CodeWriter {
     private String currFunction;
     private String modifier;
     private Path out;
-    private boolean enforceSys;
+    private final boolean enforceSys;
     private final List<Path> files = new ArrayList<>();
     private final TranslatorUtil transUtil= new TranslatorUtil();
     private final Set<String> hasOffsetAddress = new HashSet<>(Set.of("local", "argument", "this", "that"));
@@ -99,7 +98,7 @@ public class CodeWriter {
         transUtil.pushCallerPointers();
         transUtil.repositionCalleeArg(numArgs);
         transUtil.repositionCalleeLcl();
-        transUtil.writeJumpToFunction(functionName);
+        transUtil.writeGoto(functionName);
         transUtil.writeLabel(returnAddr.toString());
     }
 
@@ -109,7 +108,7 @@ public class CodeWriter {
         transUtil.setReturnValue();
         transUtil.restoreCallerSP();
         transUtil.restoreCallerPointers();
-        transUtil.writeGoto("RET");
+        transUtil.writeGotoVarAddress("RET");
     }
 
     private void writeFunction(String functionName, int numLocals) {
@@ -134,7 +133,7 @@ public class CodeWriter {
 
     private void bootstrap(){
         transUtil.initializeStackPointer();
-        transUtil.writeJumpToFunction("Sys.init");
+        writeCall("Sys.init", 0);
     }
 
     private void initialize(String path) throws IOException {

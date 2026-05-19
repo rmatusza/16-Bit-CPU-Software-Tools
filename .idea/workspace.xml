@@ -5,15 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c5c4c39d-dca2-4362-99dc-2c12daf8a96d" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assembler/src/Assembler.java" beforeDir="false" afterPath="$PROJECT_DIR$/Assembler/src/Assembler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assembler/src/Code.java" beforeDir="false" afterPath="$PROJECT_DIR$/Assembler/src/Code.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assembler/test/FibonacciElement.asm" beforeDir="false" afterPath="$PROJECT_DIR$/Assembler/test/FibonacciElement.asm" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assembler/test/FibonacciElementBIN.hack" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/VM Translator/src/CodeWriter.java" beforeDir="false" afterPath="$PROJECT_DIR$/VM Translator/src/CodeWriter.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/VM Translator/src/util/TranslatorUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/VM Translator/src/util/TranslatorUtil.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/VM Translator/test/FibonacciElement/FibonacciElement.asm" beforeDir="false" afterPath="$PROJECT_DIR$/VM Translator/test/FibonacciElement/FibonacciElement.asm" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Assembler/Assembler.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Assembler/Assembler.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Assembler/Code.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Assembler/Code.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Assembler/Parser.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Assembler/Parser.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/VM Translator/CodeWriter.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/VM Translator/CodeWriter.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/VM Translator/util/TranslatorUtil.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/VM Translator/util/TranslatorUtil.class" afterDir="false" />
     </list>
@@ -43,17 +42,17 @@
   <component name="ProjectViewState">
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.Assembler.executor": "Run",
-    "Application.VM Translator.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "refactor",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/Ryan/Desktop/Code/Projects/ECS/Assembler/test"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.Assembler.executor&quot;: &quot;Run&quot;,
+    &quot;Application.VM Translator.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;refactor&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/Ryan/Desktop/Code/Projects/ECS/Assembler/test&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\Ryan\Desktop\Code\Projects\ECS\Assembler\test" />
