@@ -53,6 +53,6 @@ This project is currently a work in progress. Refer to the below feature list fo
 
 - ✅ **VM Translator**
 
-- 🚧 **Compiler** - In Progress
+- 🚧 **Compiler**  >>  In Progress
 
-- ❗ **Operating System** - Not Started
+- ❗ **Operating System**  >>  Not Started
