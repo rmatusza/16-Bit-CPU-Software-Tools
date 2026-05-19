@@ -47,14 +47,12 @@ The Assembler translates assembly language into binary machine code.
 ## ⚠️ Project Status
 This project is currently a work in progress. Refer to the below feature list for status overview.
 
-# Feature List
+# Component List
 
 - ✅ **Assembler**
 
 - ✅ **VM Translator**
 
-- 🚧 **Compiler**
-  - In progress
+- 🚧 **Compiler** - In Progress
 
-- ❗ **Operating System**
-  - Not started
+- ❗ **Operating System** - Not Started
