@@ -5,9 +5,28 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c5c4c39d-dca2-4362-99dc-2c12daf8a96d" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/VM Translator/src/service/TranslatorService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/VM Translator/src/util/TranslatorUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/VM Translator/src/util/TranslatorUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/VM Translator/src/CodeWriter.java" beforeDir="false" afterPath="$PROJECT_DIR$/VM Translator/src/CodeWriter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/VM Translator/src/Translator.java" beforeDir="false" afterPath="$PROJECT_DIR$/VM Translator/src/Translator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/VM Translator/src/util/TranslatorUtil.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/VM Translator/test/BasicTest/BasicTest.asm" beforeDir="false" afterPath="$PROJECT_DIR$/VM Translator/test/Part1/BasicTest/BasicTest.asm" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/VM Translator/test/BasicTest/BasicTest.vm" beforeDir="false" afterPath="$PROJECT_DIR$/VM Translator/test/Part1/BasicTest/BasicTest.vm" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/VM Translator/test/FibonacciElement/FibonacciElement.asm" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/VM Translator/test/FibonacciElement/Main.vm" beforeDir="false" afterPath="$PROJECT_DIR$/VM Translator/test/Part2/FibonacciElement/Main.vm" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/VM Translator/test/FibonacciElement/Sys.vm" beforeDir="false" afterPath="$PROJECT_DIR$/VM Translator/test/Part2/FibonacciElement/Sys.vm" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/VM Translator/test/Multiply/Multiply.asm" beforeDir="false" afterPath="$PROJECT_DIR$/VM Translator/test/Part1/Multiply/Multiply.asm" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/VM Translator/test/Multiply/Multiply.vm" beforeDir="false" afterPath="$PROJECT_DIR$/VM Translator/test/Part1/Multiply/Multiply.vm" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/VM Translator/test/PointerTest/PointerTest.asm" beforeDir="false" afterPath="$PROJECT_DIR$/VM Translator/test/Part1/PointerTest/PointerTest.asm" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/VM Translator/test/PointerTest/PointerTest.vm" beforeDir="false" afterPath="$PROJECT_DIR$/VM Translator/test/Part1/PointerTest/PointerTest.vm" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/VM Translator/test/SimpleAdd/SimpleAdd.asm" beforeDir="false" afterPath="$PROJECT_DIR$/VM Translator/test/Part1/SimpleAdd/SimpleAdd.asm" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/VM Translator/test/SimpleAdd/SimpleAdd.vm" beforeDir="false" afterPath="$PROJECT_DIR$/VM Translator/test/Part1/SimpleAdd/SimpleAdd.vm" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/VM Translator/test/StackTest/StackTest.asm" beforeDir="false" afterPath="$PROJECT_DIR$/VM Translator/test/Part1/StackTest/StackTest.asm" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/VM Translator/test/StackTest/StackTest.vm" beforeDir="false" afterPath="$PROJECT_DIR$/VM Translator/test/Part1/StackTest/StackTest.vm" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/VM Translator/test/StaticTest/StaticTest.asm" beforeDir="false" afterPath="$PROJECT_DIR$/VM Translator/test/Part1/StaticTest/StaticTest.asm" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/VM Translator/test/StaticTest/StaticTest.vm" beforeDir="false" afterPath="$PROJECT_DIR$/VM Translator/test/Part1/StaticTest/StaticTest.vm" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/VM Translator/CodeWriter.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/VM Translator/CodeWriter.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/VM Translator/Translator.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/VM Translator/Translator.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/VM Translator/util/TranslatorUtil.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/VM Translator/util/TranslatorUtil.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -44,14 +63,19 @@
     "RunOnceActivity.git.unshallow": "true",
     "git-widget-placeholder": "refactor",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/Ryan/Desktop/Code/Projects/ECS/Assembler/test"
+    "last_opened_file_path": "C:/Users/Ryan/Desktop/Code/Projects/ECS/VM Translator/test/Part2/NestedCall"
   }
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\Ryan\Desktop\Code\Projects\ECS\VM Translator\test\Part2\NestedCall" />
       <recent name="C:\Users\Ryan\Desktop\Code\Projects\ECS\Assembler\test" />
       <recent name="C:\Users\Ryan\Desktop\Code\Projects\ECS\VM Translator\test\FibonacciElement" />
       <recent name="C:\Users\Ryan\Desktop\Code\Projects\ECS\VM Translator\testAlt" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Ryan\Desktop\Code\Projects\ECS\VM Translator\test\Part1" />
+      <recent name="C:\Users\Ryan\Desktop\Code\Projects\ECS\VM Translator\test\Part2" />
     </key>
   </component>
   <component name="RunManager" selected="Application.VM Translator">
