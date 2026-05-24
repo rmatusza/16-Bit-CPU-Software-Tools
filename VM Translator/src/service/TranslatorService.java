@@ -23,6 +23,15 @@ public class TranslatorService {
         assemblyService.popToD();
     }
 
+    public void popToAddress(String address, String offset){
+        if(offset.isEmpty()){
+            popToAddress(address);
+        }
+        else{
+            popToAddress(address, Integer.parseInt(offset));
+        }
+    }
+
     public void popToAddress(String address){
         assemblyService.popToD();
         assemblyService.writeDToMA(address);
@@ -32,6 +41,18 @@ public class TranslatorService {
         assemblyService.saveOffsetAddressToTemp(address, offset, "R13", util.operations.get("add"));
         assemblyService.popToD();
         assemblyService.writeDToMAMA("R13");
+    }
+
+    public void push(String address, String offset, String constant){
+        if(offset.isEmpty() && constant.isEmpty()){
+            push(address);
+        }
+        else if(!constant.isEmpty()){
+            push(Integer.parseInt(constant));
+        }
+        else{
+            push(address, Integer.parseInt(offset));
+        }
     }
 
     public void push(int val){
@@ -194,9 +215,8 @@ public class TranslatorService {
 
     public void initializeLocals(int numLocals){
         for(int i=0; i<numLocals; i++){
-           assemblyService.writeAToD(i);
-           assemblyService.offsetAByMAOpD("LCL", util.operations.get("add"));
-           assemblyService.writeConstToMA("0");
+            assemblyService.writeAToD(0);
+            assemblyService.pushD();
         }
     }
 }

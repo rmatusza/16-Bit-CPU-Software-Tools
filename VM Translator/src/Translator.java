@@ -16,7 +16,9 @@ public class Translator {
 
         String baseDir = "VM Translator/test/Part2/";
         List<String> paths = List.of(
-                "InitializeLocals"
+                "NestedCall",
+                "FibonacciElement"
+
         );
 
         try{

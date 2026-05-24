@@ -25,23 +25,12 @@ public class CodeWriter {
         String modifier = parser.argTwo();
         String address = parser.argOne();
         String offset = util.hasOffsetAddress.contains(address) ? modifier : "";
+        String constant = address.equalsIgnoreCase("constant") ? modifier : "";
         if(ct.equals(CType.C_PUSH)){
-            if(address.equalsIgnoreCase("constant")){
-                service.push(Integer.parseInt(modifier));
-            }
-            else if(offset.isEmpty()){
-                service.push(util.getAddressOrDefault(address, modifier, filename).get());
-            }
-            else {
-                service.push(util.getAddressOrDefault(address, modifier, filename).get(), Integer.parseInt(offset));
-            }
+            service.push(util.getAddressOrDefault(address, modifier, filename).get(), offset, constant);
         }
         else {
-
-            if(offset.isEmpty()){
-                service.popToAddress(util.getAddress(address, modifier, filename).get());
-            }
-            service.popToAddress(util.getAddress(address, modifier, filename).get(), Integer.parseInt(offset));
+            service.popToAddress(util.getAddress(address, modifier, filename).get(), offset);
         }
     }
 
@@ -187,7 +176,6 @@ public class CodeWriter {
         }
         catch(RuntimeException | IOException e) {
             System.out.printf("\u001B[31m%s\u001B[0m", e);
-            e.printStackTrace();
         }
     }
 }

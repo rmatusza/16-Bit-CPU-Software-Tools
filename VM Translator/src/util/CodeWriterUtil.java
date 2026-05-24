@@ -9,7 +9,7 @@ import java.util.function.Supplier;
 public class CodeWriterUtil {
     private String filename;
     private String modifier;
-    public final Set<String> hasOffsetAddress = new HashSet<>(Set.of("local", "argument", "this", "that", "pointer", "temp"));
+    public final Set<String> hasOffsetAddress = new HashSet<>(Set.of("local", "argument", "this", "that"));
     public final Map<String, String> conditionalBranchMap = Map.of(
             "eq", "D;JEQ",
             "lt", "D;JLT",
