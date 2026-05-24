@@ -3,6 +3,9 @@ import java.util.List;
 
 public class Translator {
     public static void main(String[] args) throws IOException {
+        boolean ENFORCE_SYS;
+
+//        String baseDir = "VM Translator/test/Part1";
 //        List<String> paths = List.of(
 //                "BasicTest",
 //                "PointerTest",
@@ -10,11 +13,13 @@ public class Translator {
 //                "StackTest",
 //                "StaticTest"
 //        );
-        List<String> paths = List.of(
-                "NestedCall"
-        );
 
-        boolean ENFORCE_SYS;
+        String baseDir = "VM Translator/test/Part2/";
+        List<String> paths = List.of(
+                "NestedCall",
+                "FibonacciElement"
+
+        );
 
         try{
             ENFORCE_SYS = Boolean.parseBoolean(args[0]);
@@ -23,9 +28,8 @@ public class Translator {
             ENFORCE_SYS = true;
         }
 
-
         for(var p : paths){
-            new CodeWriter("VM Translator/test/"+p, ENFORCE_SYS);
+            new CodeWriter(baseDir+p, ENFORCE_SYS);
         }
     }
 }

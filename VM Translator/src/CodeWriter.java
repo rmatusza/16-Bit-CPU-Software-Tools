@@ -1,5 +1,6 @@
 import util.CType;
-import util.TranslatorUtil;
+import service.TranslatorService;
+import util.CodeWriterUtil;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -8,113 +9,86 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 public class CodeWriter {
     private Parser parser;
     private String filename;
     private String currFunction;
-    private String modifier;
     private Path out;
     private final boolean enforceSys;
     private final List<Path> files = new ArrayList<>();
-    private final TranslatorUtil transUtil= new TranslatorUtil();
-    private final Set<String> hasOffsetAddress = new HashSet<>(Set.of("local", "argument", "this", "that"));
-    private final Map<String, String> booleanMap = Map.of(
-            "eq", "D;JEQ",
-            "lt", "D;JLT",
-            "gt", "D;JGT"
-    );
-    private final Map<String, String> tempLocations = new HashMap<>(Map.of(
-            "0", "R5",
-            "1", "R6",
-            "2", "R7",
-            "3", "R8",
-            "4", "R9",
-            "5", "R10",
-            "6", "R11",
-            "7", "R12"
-    ));
-    private final Map<String, Supplier<String>> addressMap = new HashMap<>(Map.ofEntries(
-            Map.entry("temp", () -> tempLocations.get(modifier)),
-            Map.entry("local", () -> "LCL"),
-            Map.entry("argument", () -> "ARG"),
-            Map.entry("static", () -> filename+"."+modifier),
-            Map.entry("pointer", () -> (modifier.equalsIgnoreCase("0") ? "THIS" : "THAT")),
-            Map.entry("this", () -> "THIS"),
-            Map.entry("that", () -> "THAT")
-    ));
+    private final TranslatorService service = new TranslatorService();
+    private final CodeWriterUtil util = new CodeWriterUtil();
 
     private void writePushPop(CType ct) {
-        modifier = parser.argTwo();
+        String modifier = parser.argTwo();
         String address = parser.argOne();
-        String offset = hasOffsetAddress.contains(address) ? modifier : "";
-
+        String offset = util.hasOffsetAddress.contains(address) ? modifier : "";
+        String constant = address.equalsIgnoreCase("constant") ? modifier : "";
         if(ct.equals(CType.C_PUSH)){
-            transUtil.push(addressMap.getOrDefault(address, () -> modifier).get(), offset);
+            service.push(util.getAddressOrDefault(address, modifier, filename).get(), offset, constant);
         }
         else {
-            transUtil.pop(addressMap.get(address).get(), offset);
+            service.popToAddress(util.getAddress(address, modifier, filename).get(), offset);
         }
     }
 
     private void writeArithmetic(String op) {
         if(op.equals("eq") || op.equals("gt") || op.equals("lt")){
-            transUtil.binaryOp("sub");
-            transUtil.pop();
-            transUtil.writeIsTrueCondition(booleanMap.get(op));
-            transUtil.writeIsFalseCondition();
-            transUtil.writeIsTrueHandler();
-            transUtil.writeIsContinueCondition();
-            transUtil.writeIsFalseHandler();
-            transUtil.writeIsContinueHandler();
-            transUtil.incrementSymbolId();
+            service.binaryOp("sub");
+            service.popToD();
+            service.writeIsTrueCondition(util.conditionalBranchMap.get(op));
+            service.writeIsFalseCondition();
+            service.writeIsTrueHandler();
+            service.writeIsContinueCondition();
+            service.writeIsFalseHandler();
+            service.writeIsContinueHandler();
+            service.incrementSymbolId();
         }
         else if(op.equals("not") || op.equals("neg")) {
-            transUtil.unaryOp(op);
+            service.unaryOp(op);
         }
         else if(op.equals("add") || op.equals("sub") || op.equals("and") || op.equals("or")){
-           transUtil.binaryOp(op);
+           service.binaryOp(op);
         }
     }
 
     private void writeLabel(String label) {
-        transUtil.writeLabel(currFunction, label);
+        service.writeLabel(currFunction, label);
     }
 
     private void writeGoto(String label) {
-        transUtil.writeGoto(currFunction, label);
+        service.writeGoto(currFunction, label);
     }
 
     private void writeIf(String label) {
-       transUtil.writeIf(currFunction, label);
+       service.writeIf(currFunction, label, util.conditionalBranchMap.get("ne"));
     }
 
     private void writeCall(String functionName, int numArgs) {
-        StringBuilder returnAddr = transUtil.generateReturnAddressName(functionName);
-
-        transUtil.pushReturnAddress(returnAddr.toString());
-        transUtil.pushCallerPointers();
-        transUtil.repositionCalleeArg(numArgs);
-        transUtil.repositionCalleeLcl();
-        transUtil.writeGoto(functionName);
-        transUtil.writeLabel(returnAddr.toString());
+        service.pushReturnAddress(functionName);
+        service.pushCallerPointers();
+        service.repositionCalleeArg(numArgs);
+        service.repositionCalleeLcl();
+        service.writeGoto(functionName);
+        service.writeReturnAddressLabel(functionName);
+        service.incrementSymbolId();
     }
 
     private void writeReturn() {
-        transUtil.setFrameVar();
-        transUtil.setReturnAddrVar();
-        transUtil.setReturnValue();
-        transUtil.restoreCallerSP();
-        transUtil.restoreCallerPointers();
-        transUtil.writeGotoVarAddress("RET");
+        service.setFrameVar();
+        service.setReturnAddrVar();
+        service.setReturnValue();
+        service.restoreCallerSP();
+        service.restoreCallerPointers();
+        service.writeGotoVar("RET");
     }
 
     private void writeFunction(String functionName, int numLocals) {
         this.currFunction = functionName;
-        transUtil.writeLabel(functionName);
-        transUtil.initializeLocals(numLocals);
+        service.writeLabel(functionName);
+        service.initializeLocals(numLocals);
     }
 
     private boolean hasSysFile() {
@@ -132,7 +106,7 @@ public class CodeWriter {
     }
 
     private void bootstrap(){
-        transUtil.initializeStackPointer();
+        service.initialize();
         writeCall("Sys.init", 0);
     }
 
@@ -189,7 +163,7 @@ public class CodeWriter {
     }
 
     private void writeOutput() throws IOException {
-        Files.write(out, transUtil.getInstructions(), StandardCharsets.UTF_8, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+        Files.write(out, service.getAssembly(), StandardCharsets.UTF_8, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
     }
 
     public CodeWriter(String path, boolean enforceSys) {
