@@ -11,7 +11,7 @@ public class Translator {
 //                "StaticTest"
 //        );
         List<String> paths = List.of(
-                "FibonacciElement"
+                "NestedCall"
         );
 
         boolean ENFORCE_SYS;
